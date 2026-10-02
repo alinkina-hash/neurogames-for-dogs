@@ -5,6 +5,7 @@ import { groupGamesByType } from '../catalog/groupGames'
 import GameTags from '../components/GameTags.tsx'
 import HeroDog, { PawTrail } from '../components/HeroDog.tsx'
 import TypeIcon from '../components/TypeIcon.tsx'
+import WhyBlock from '../components/WhyBlock.tsx'
 import { games } from '../content/games'
 import {
   DIFFICULTIES,
@@ -35,7 +36,7 @@ function CatalogPage() {
           </p>
           <ul className="hero-facts">
             <li>{games.length} игр</li>
-            <li>5–15 минут в день</li>
+            <li>По 5–15 минут</li>
             <li>Бесплатно</li>
           </ul>
         </div>
@@ -44,6 +45,8 @@ function CatalogPage() {
         </p>
         <HeroDog />
       </section>
+
+      <WhyBlock />
 
       <div className="type-filter" role="group" aria-label="Тип игры">
         <button

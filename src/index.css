@@ -209,6 +209,7 @@ h3 {
   padding: 4px 12px;
   font-size: 0.875rem;
   font-weight: 900;
+  white-space: nowrap;
   background: #ffffff;
   border: 2.5px solid var(--ink);
   border-radius: 999px;
@@ -379,6 +380,235 @@ h3 {
   transform-origin: 50% 100%;
   transform-box: fill-box;
   animation: head-tilt 6.4s ease-in-out infinite;
+}
+
+/* Buttons */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 18px;
+  font: inherit;
+  font-weight: 900;
+  color: var(--ink);
+  cursor: pointer;
+  background: var(--sun);
+  border: 2.5px solid var(--ink);
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+  transition:
+    box-shadow 0.15s,
+    transform 0.3s var(--bounce);
+}
+
+.button:hover {
+  transform: translate(-1px, -2px) rotate(-1.5deg);
+}
+
+.button:active {
+  box-shadow: 0 0 0 var(--ink);
+  transform: translate(3px, 3px);
+}
+
+/* "Why brain games" teaser and dialog */
+
+.why-teaser {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 18px;
+  margin-bottom: 26px;
+  background: #d9f2ff;
+  border: var(--outline);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transform: rotate(0.5deg);
+}
+
+.why-badge {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  font-family: var(--display);
+  font-size: 1.5rem;
+  font-weight: 900;
+  background: var(--sun);
+  border: 2.5px solid var(--ink);
+  border-radius: var(--blob);
+  box-shadow: 2px 2px 0 var(--ink);
+  animation:
+    blob 5s ease-in-out infinite,
+    nudge 4s ease-in-out infinite;
+}
+
+.why-teaser h2 {
+  margin: 0 0 4px;
+}
+
+.why-teaser p {
+  margin: 0 0 14px;
+}
+
+.why-dialog {
+  width: min(640px, calc(100vw - 24px));
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  overflow: auto;
+  color: var(--ink);
+  overscroll-behavior: contain;
+  background: var(--bg);
+  border: var(--outline);
+  border-radius: calc(var(--radius) + 6px);
+  box-shadow: 8px 8px 0 var(--ink);
+}
+
+.why-dialog[open] {
+  animation: pop 0.4s var(--bounce) both;
+}
+
+.why-dialog::backdrop {
+  background: rgb(42 26 18 / 62%);
+}
+
+.why-dialog[open]::backdrop {
+  animation: fade-in 0.25s ease-out both;
+}
+
+/* The page behind an open dialog should not scroll. */
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
+.why-dialog-body {
+  padding: 22px 20px 24px;
+}
+
+.why-dialog h2 {
+  max-width: calc(100% - 56px);
+  margin-bottom: 12px;
+  font-size: 1.3125rem;
+}
+
+.dialog-close {
+  position: sticky;
+  top: 12px;
+  z-index: 1;
+  float: right;
+  width: 44px;
+  height: 44px;
+  margin: -8px -6px 0 12px;
+  font: inherit;
+  font-size: 1.125rem;
+  font-weight: 900;
+  color: var(--ink);
+  cursor: pointer;
+  background: #ffffff;
+  border: 2.5px solid var(--ink);
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s var(--bounce);
+}
+
+.dialog-close:hover {
+  transform: rotate(90deg) scale(1.08);
+}
+
+.why-lead {
+  margin: 0 0 20px;
+  font-size: 1.0625rem;
+  font-weight: 800;
+}
+
+.why-points {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  margin: 0 0 16px;
+  list-style: none;
+  counter-reset: why;
+}
+
+.why-points li {
+  position: relative;
+  padding: 14px 16px;
+  counter-increment: why;
+  background: #ffffff;
+  border: 2.5px solid var(--ink);
+  border-radius: 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.why-points li::before {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  font-weight: 900;
+  content: counter(why);
+  background: var(--why-color, var(--sun));
+  border: 2.5px solid var(--ink);
+  border-radius: var(--blob);
+}
+
+.why-points li:nth-child(4n + 1) {
+  --why-color: #5fd68a;
+}
+
+.why-points li:nth-child(4n + 2) {
+  --why-color: #bfa3ff;
+}
+
+.why-points li:nth-child(4n + 3) {
+  --why-color: #6ccbf7;
+}
+
+.why-points li:nth-child(4n + 4) {
+  --why-color: #ff9478;
+}
+
+.why-points h3,
+.why-caveat h3 {
+  margin: 0 0 4px;
+  font-size: 0.9375rem;
+}
+
+/* The heading sits beside the number; the text below uses the full width. */
+.why-points h3 {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  padding-left: 48px;
+  margin-bottom: 8px;
+}
+
+.why-points p,
+.why-caveat p {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+.why-caveat {
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  background: var(--warn-bg);
+  border: 2.5px dashed var(--ink);
+  border-radius: 18px;
+}
+
+.why-sources {
+  padding-left: 20px;
+  margin: 6px 0 20px;
+  font-size: 0.8125rem;
+}
+
+.why-sources li {
+  margin-bottom: 4px;
 }
 
 /* Catalogue filters */
@@ -981,6 +1211,22 @@ dd {
 
   60% {
     rotate: 11deg;
+  }
+}
+
+@keyframes nudge {
+  0%,
+  80%,
+  100% {
+    translate: 0 0;
+  }
+
+  88% {
+    translate: 0 -7px;
+  }
+
+  94% {
+    translate: 0 2px;
   }
 }
 

@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
         ? viteSingleFile()
         : VitePWA({
             registerType: 'autoUpdate',
-            includeAssets: ['favicon.svg'],
+            includeAssets: ['favicon.svg', 'icons/apple-touch-icon.png'],
             manifest: {
               name: 'Нейроигры для собак',
               short_name: 'Нейроигры',
@@ -28,7 +28,13 @@ export default defineConfig(({ mode }) => {
               display: 'standalone',
               theme_color: '#ffb454',
               background_color: '#fff1c9',
-              icons: [{ src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' }],
+              icons: [
+                { src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
+                { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+                { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+                // Full-bleed background with the paw inside the safe zone, so launchers can crop it.
+                { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+              ],
             },
           }),
     ],
