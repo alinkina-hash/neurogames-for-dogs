@@ -47,13 +47,9 @@ docs/             спецификация
 
 ## Публикация
 
-При пуше в ветку `main` сайт обновляется в двух местах:
-
-- **Netlify** — https://neurodog.netlify.app. Netlify сам собирает проект из репозитория;
-  настройки сборки лежат в `netlify.toml`.
-- **GitHub Pages** — https://alinkina-hash.github.io/neurogames-for-dogs/. Собирает
-  GitHub Actions (`.github/workflows/deploy.yml`; в настройках репозитория:
-  Settings → Pages → Source: GitHub Actions).
+Сайт размещён на Netlify: https://neurodog.netlify.app. При пуше в ветку `main` Netlify сам
+собирает проект из репозитория: сначала запускает тесты, и если они упали, сайт не
+обновляется. Настройки сборки лежат в `netlify.toml`.
 
 `npm run build:single` собирает весь сайт в один файл `dist-single/index.html`, который
 открывается с диска без сервера. В таком режиме видео открываются ссылкой на YouTube:

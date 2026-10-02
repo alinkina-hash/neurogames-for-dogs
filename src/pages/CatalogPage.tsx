@@ -7,6 +7,7 @@ import HeroDog, { PawTrail } from '../components/HeroDog.tsx'
 import TypeIcon from '../components/TypeIcon.tsx'
 import WhyBlock from '../components/WhyBlock.tsx'
 import { games } from '../content/games'
+import { pluralRu } from '../content/plural'
 import {
   DIFFICULTIES,
   DIFFICULTY_LABELS,
@@ -36,7 +37,9 @@ function CatalogPage() {
             вместе с собакой.
           </p>
           <ul className="hero-facts">
-            <li>{games.length} игр</li>
+            <li>
+              {games.length} {pluralRu(games.length, ['игра', 'игры', 'игр'])}
+            </li>
             <li>По 5–15 минут</li>
             <li>Бесплатно</li>
           </ul>
