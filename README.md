@@ -47,5 +47,14 @@ docs/             спецификация
 
 ## Публикация
 
-При пуше в ветку `main` GitHub Actions собирает проект и публикует его на GitHub Pages
-(в настройках репозитория: Settings → Pages → Source: GitHub Actions).
+При пуше в ветку `main` сайт обновляется в двух местах:
+
+- **Netlify** — https://neurodog.netlify.app. Netlify сам собирает проект из репозитория;
+  настройки сборки лежат в `netlify.toml`.
+- **GitHub Pages** — https://alinkina-hash.github.io/neurogames-for-dogs/. Собирает
+  GitHub Actions (`.github/workflows/deploy.yml`; в настройках репозитория:
+  Settings → Pages → Source: GitHub Actions).
+
+`npm run build:single` собирает весь сайт в один файл `dist-single/index.html`, который
+открывается с диска без сервера. В таком режиме видео открываются ссылкой на YouTube:
+встроенный плеер с диска не работает.
