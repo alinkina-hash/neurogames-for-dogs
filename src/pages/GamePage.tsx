@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import GameMediaView from '../components/GameMediaView.tsx'
 import GameTags from '../components/GameTags.tsx'
 import TypeIcon from '../components/TypeIcon.tsx'
+import VariationsBlock from '../components/VariationsBlock.tsx'
 import { findGame } from '../content/games'
 import type { Game } from '../content/schema'
 
@@ -110,6 +111,8 @@ function GamePage() {
             ))}
           </ol>
         </section>
+
+        {game.variations && <VariationsBlock variations={game.variations} />}
 
         <section className="block block-warn">
           <h2>Когда остановиться</h2>

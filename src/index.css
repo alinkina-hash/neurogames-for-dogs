@@ -1104,6 +1104,46 @@ html:has(dialog[open]) {
   margin: 0;
 }
 
+/* Variations of a game */
+
+.variations {
+  display: grid;
+  gap: 16px;
+}
+
+.variation {
+  padding: 16px;
+  background: var(--bg);
+  border: 2.5px dashed var(--ink);
+  border-radius: 18px;
+}
+
+.variation-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.variation-head h3 {
+  margin: 0;
+}
+
+.variation > p {
+  margin: 0 0 12px;
+}
+
+.variation .media {
+  margin-top: 4px;
+}
+
+.block .variation-sources {
+  margin: 10px 0 0;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
 .media img {
   max-width: 100%;
   border-radius: 14px;

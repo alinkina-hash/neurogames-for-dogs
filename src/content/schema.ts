@@ -34,6 +34,17 @@ const mediaSchema = z.discriminatedUnion('kind', [
 ])
 
 const difficultySchema = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)])
+const sourcesSchema = z.array(z.strictObject({ title: text, url: z.url() })).min(1)
+
+/** Another way to play the same game; every variation must show a demo and cite a source. */
+const variationSchema = z.strictObject({
+  title: text,
+  difficulty: difficultySchema.optional(),
+  description: text,
+  steps: z.array(text).min(1),
+  media: z.array(mediaSchema).min(1),
+  sources: sourcesSchema,
+})
 const levelSchema = z.union([z.literal(1), z.literal(2), z.literal(3)])
 
 export const gameSchema = z.strictObject({
@@ -63,10 +74,12 @@ export const gameSchema = z.strictObject({
       large: text.optional(),
     })
     .optional(),
-  sources: z.array(z.strictObject({ title: text, url: z.url() })).min(1),
+  variations: z.array(variationSchema).optional(),
+  sources: sourcesSchema,
 })
 
 export type GameType = (typeof GAME_TYPES)[number]
 export type Difficulty = (typeof DIFFICULTIES)[number]
 export type Game = z.infer<typeof gameSchema>
 export type GameMedia = NonNullable<Game['media']>[number]
+export type GameVariation = NonNullable<Game['variations']>[number]

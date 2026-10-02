@@ -1,12 +1,19 @@
 {
   "id": "play-pause",
   "title": "Пауза в игре",
-  "types": ["self-control"],
+  "types": [
+    "self-control"
+  ],
   "goal": "Собака учится быстро успокаиваться посреди азартной игры и получает продолжение игры как награду.",
   "difficulty": 4,
-  "equipment": ["любимая игрушка: канат, мяч или «удочка»"],
+  "equipment": [
+    "любимая игрушка: канат, мяч или «удочка»"
+  ],
   "prepMinutes": 0,
-  "sessionMinutes": { "min": 3, "max": 10 },
+  "sessionMinutes": {
+    "min": 3,
+    "max": 10
+  },
   "media": [
     {
       "kind": "youtube",
@@ -22,9 +29,18 @@
     "Постепенно делайте игру азартнее перед каждой паузой."
   ],
   "levels": [
-    { "level": 1, "description": "Спокойная игра, после остановки вы просите собаку сесть." },
-    { "level": 2, "description": "После остановки собака сама садится или ложится без команды." },
-    { "level": 3, "description": "Игра очень азартная, а пауза длится 5–10 секунд." }
+    {
+      "level": 1,
+      "description": "Спокойная игра, после остановки вы просите собаку сесть."
+    },
+    {
+      "level": 2,
+      "description": "После остановки собака сама садится или ложится без команды."
+    },
+    {
+      "level": 3,
+      "description": "Игра очень азартная, а пауза длится 5–10 секунд."
+    }
   ],
   "stopSignals": [
     "Собака хватает зубами руки или одежду: спокойно закончите игру на минуту.",
@@ -40,8 +56,41 @@
     "puppy": "Только спокойная игра и первый уровень; раунды по 5 секунд.",
     "senior": "Замените беготню на спокойное перетягивание у пола, без рывков и прыжков."
   },
+  "variations": [
+    {
+      "title": "Удочка с паузами",
+      "difficulty": 4,
+      "description": "Вместо каната — игрушка-«удочка»: приманка на шнуре, за которой собака гоняется. Когда вы замираете, собака тоже должна замереть, и только тогда приманка снова оживает.",
+      "steps": [
+        "Поводите приманкой по земле, чтобы собака погналась за ней.",
+        "Резко замрите и опустите приманку на землю.",
+        "Как только собака остановилась, снова двигайте приманку — продолжение игры и есть награда.",
+        "Постепенно удлиняйте паузы.",
+        "Играйте на нескользкой поверхности и не заставляйте собаку высоко прыгать за приманкой."
+      ],
+      "media": [
+        {
+          "kind": "youtube",
+          "url": "https://www.youtube.com/watch?v=THzKBOHnLbI",
+          "title": "Игра «Замри» с удочкой (видео на английском)"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Tug-E-Nuff: How to teach your dog impulse control (with games)",
+          "url": "https://tug-e-nuff.com/blogs/news/impulse-control-games"
+        }
+      ]
+    }
+  ],
   "sources": [
-    { "title": "AKC: Teaching Your Dog Self-Control", "url": "https://www.akc.org/expert-advice/training/teaching-your-dog-self-control/" },
-    { "title": "Journey Dog Training: Ready, Set, DOWN!", "url": "https://www.youtube.com/watch?v=bUZwzd573lE" }
+    {
+      "title": "AKC: Teaching Your Dog Self-Control",
+      "url": "https://www.akc.org/expert-advice/training/teaching-your-dog-self-control/"
+    },
+    {
+      "title": "Journey Dog Training: Ready, Set, DOWN!",
+      "url": "https://www.youtube.com/watch?v=bUZwzd573lE"
+    }
   ]
 }
