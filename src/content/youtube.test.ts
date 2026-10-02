@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { youtubeEmbedUrl, youtubeVideoId } from './youtube'
+import { youtubeEmbedUrl, youtubeThumbnailUrl, youtubeVideoId } from './youtube'
 
 describe('youtubeVideoId', () => {
   it.each([
@@ -27,5 +27,17 @@ describe('youtubeEmbedUrl', () => {
 
   it('returns null when the url is not a YouTube video', () => {
     expect(youtubeEmbedUrl('https://example.com/video')).toBeNull()
+  })
+})
+
+describe('youtubeThumbnailUrl', () => {
+  it('builds the preview image url', () => {
+    expect(youtubeThumbnailUrl('https://www.youtube.com/watch?v=abcDEF12345')).toBe(
+      'https://i.ytimg.com/vi/abcDEF12345/hqdefault.jpg',
+    )
+  })
+
+  it('returns null when the url is not a YouTube video', () => {
+    expect(youtubeThumbnailUrl('https://example.com/video')).toBeNull()
   })
 })

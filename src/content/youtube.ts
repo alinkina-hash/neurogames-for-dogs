@@ -23,3 +23,8 @@ export function youtubeEmbedUrl(url: string): string | null {
   const id = youtubeVideoId(url)
   return id ? `https://www.youtube-nocookie.com/embed/${id}` : null
 }
+
+export function youtubeThumbnailUrl(url: string): string | null {
+  const id = youtubeVideoId(url)
+  return id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : null
+}

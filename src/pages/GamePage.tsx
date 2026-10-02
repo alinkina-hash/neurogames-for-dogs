@@ -19,7 +19,9 @@ function GamePage() {
     return (
       <>
         <p>Такой игры нет.</p>
-        <Link to="/">← В каталог</Link>
+        <Link to="/" className="back-link">
+          ← В каталог
+        </Link>
       </>
     )
   }
@@ -27,88 +29,109 @@ function GamePage() {
   const adaptations = Object.entries(game.adaptations ?? {}) as [keyof typeof ADAPTATION_LABELS, string][]
 
   return (
-    <article className="game">
-      <Link to="/">← В каталог</Link>
-      <h1>{game.title}</h1>
-      <GameTags game={game} />
-      <p className="goal">{game.goal}</p>
+    <article className="game" data-type={game.types[0]}>
+      <Link to="/" className="back-link">
+        ← В каталог
+      </Link>
 
-      {game.media?.map((media) => <GameMediaView key={media.url} media={media} />)}
+      <header className="game-head">
+        <h1>{game.title}</h1>
+        <GameTags game={game} />
+        <p className="goal">{game.goal}</p>
+      </header>
 
-      <h2>Что понадобится</h2>
-      {game.equipment.length === 0 ? (
-        <p>Специальный инвентарь не нужен.</p>
-      ) : (
-        <ul>
-          {game.equipment.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      )}
-      <p>Подготовка: {game.prepMinutes} мин.</p>
-
-      <h2>Как играть</h2>
-      <ol>
-        {game.steps.map((step) => (
-          <li key={step}>{step}</li>
+      <div className="game-body">
+        {game.media?.map((media) => (
+          <section key={media.url} className="block">
+            <GameMediaView media={media} />
+          </section>
         ))}
-      </ol>
 
-      <h2>Как усложнять</h2>
-      <ol>
-        {game.levels.map((level) => (
-          <li key={level.level}>{level.description}</li>
-        ))}
-      </ol>
+        <section className="block">
+          <h2>Что понадобится</h2>
+          {game.equipment.length === 0 ? (
+            <p>Специальный инвентарь не нужен.</p>
+          ) : (
+            <ul>
+              {game.equipment.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          )}
+          <p className="block-note">Подготовка: {game.prepMinutes} мин.</p>
+        </section>
 
-      <h2>Сколько играть</h2>
-      <p>
-        Взрослой собаке — {game.sessionMinutes.min}–{game.sessionMinutes.max} минут, щенку — 2–5 минут. Лучше несколько
-        коротких подходов в день, чем один длинный.
-      </p>
+        <section className="block">
+          <h2>Сколько играть</h2>
+          <p>
+            Взрослой собаке — {game.sessionMinutes.min}–{game.sessionMinutes.max} минут, щенку — 2–5 минут.
+          </p>
+          <p className="block-note">Лучше несколько коротких подходов в день, чем один длинный.</p>
+        </section>
 
-      <h2>Когда остановиться</h2>
-      <ul>
-        {game.stopSignals.map((signal) => (
-          <li key={signal}>{signal}</li>
-        ))}
-      </ul>
-
-      <h2>Безопасность</h2>
-      <ul>
-        {game.safety.map((note) => (
-          <li key={note}>{note}</li>
-        ))}
-      </ul>
-
-      {adaptations.length > 0 && (
-        <>
-          <h2>Особые случаи</h2>
-          <dl>
-            {adaptations.map(([key, advice]) => (
-              <div key={key}>
-                <dt>{ADAPTATION_LABELS[key]}</dt>
-                <dd>{advice}</dd>
-              </div>
+        <section className="block">
+          <h2>Как играть</h2>
+          <ol className="steps">
+            {game.steps.map((step) => (
+              <li key={step}>{step}</li>
             ))}
-          </dl>
-        </>
-      )}
+          </ol>
+        </section>
 
-      <h2>Источники</h2>
-      <ul>
-        {game.sources.map((source) => (
-          <li key={source.url}>
-            <a href={source.url} target="_blank" rel="noreferrer">
-              {source.title}
-            </a>
-          </li>
-        ))}
-      </ul>
+        <section className="block">
+          <h2>Как усложнять</h2>
+          <ol className="levels">
+            {game.levels.map((level) => (
+              <li key={level.level}>{level.description}</li>
+            ))}
+          </ol>
+        </section>
 
-      <p className="disclaimer">
-        Это не ветеринарная рекомендация. При проблемах со здоровьем собаки посоветуйтесь с ветеринаром.
-      </p>
+        <section className="block block-warn">
+          <h2>Когда остановиться</h2>
+          <ul>
+            {game.stopSignals.map((signal) => (
+              <li key={signal}>{signal}</li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="block block-danger">
+          <h2>Безопасность</h2>
+          <ul>
+            {game.safety.map((note) => (
+              <li key={note}>{note}</li>
+            ))}
+          </ul>
+        </section>
+
+        {adaptations.length > 0 && (
+          <section className="block">
+            <h2>Особые случаи</h2>
+            <dl>
+              {adaptations.map(([key, advice]) => (
+                <div key={key}>
+                  <dt>{ADAPTATION_LABELS[key]}</dt>
+                  <dd>{advice}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        )}
+
+        <section className="block sources">
+          <h2>Источники</h2>
+          <ul>
+            {game.sources.map((source) => (
+              <li key={source.url}>
+                <a href={source.url} target="_blank" rel="noreferrer">
+                  {source.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
     </article>
   )
 }

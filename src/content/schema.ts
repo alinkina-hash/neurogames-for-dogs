@@ -9,11 +9,7 @@ export const GAME_TYPE_LABELS: Record<GameType, string> = {
   'self-control': 'Самоконтроль',
 }
 
-export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
-  1: 'Лёгкая',
-  2: 'Средняя',
-  3: 'Сложная',
-}
+export const DIFFICULTIES = [1, 2, 3, 4, 5] as const
 
 const text = z.string().trim().min(1)
 
@@ -22,7 +18,8 @@ const mediaSchema = z.discriminatedUnion('kind', [
   z.strictObject({ kind: z.literal('photo'), url: z.url(), author: text, license: text }),
 ])
 
-const difficultySchema = z.union([z.literal(1), z.literal(2), z.literal(3)])
+const difficultySchema = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)])
+const levelSchema = z.union([z.literal(1), z.literal(2), z.literal(3)])
 
 export const gameSchema = z.strictObject({
   id: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/),
@@ -38,7 +35,7 @@ export const gameSchema = z.strictObject({
   media: z.array(mediaSchema).optional(),
   steps: z.array(text).min(1),
   levels: z
-    .array(z.strictObject({ level: difficultySchema, description: text }))
+    .array(z.strictObject({ level: levelSchema, description: text }))
     .length(3)
     .refine((levels) => levels.every((l, i) => l.level === i + 1), 'levels must go 1, 2, 3'),
   stopSignals: z.array(text).min(1),
@@ -55,6 +52,6 @@ export const gameSchema = z.strictObject({
 })
 
 export type GameType = (typeof GAME_TYPES)[number]
-export type Difficulty = 1 | 2 | 3
+export type Difficulty = (typeof DIFFICULTIES)[number]
 export type Game = z.infer<typeof gameSchema>
 export type GameMedia = NonNullable<Game['media']>[number]

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Game } from '../content/schema'
-import { filterGames } from './filterGames'
+import { filterGames, toggleType } from './filterGames'
 
 function game(overrides: Partial<Game> & Pick<Game, 'id'>): Game {
   return {
@@ -37,8 +37,16 @@ describe('filterGames', () => {
     expect(ids(filterGames(games, {}))).toEqual(['mat', 'cups', 'wait'])
   })
 
+  it('returns every game when no types are selected', () => {
+    expect(ids(filterGames(games, { types: [] }))).toEqual(['mat', 'cups', 'wait'])
+  })
+
   it('matches a game by any of its types', () => {
-    expect(ids(filterGames(games, { type: 'scent' }))).toEqual(['mat', 'cups'])
+    expect(ids(filterGames(games, { types: ['scent'] }))).toEqual(['mat', 'cups'])
+  })
+
+  it('keeps games of any selected type', () => {
+    expect(ids(filterGames(games, { types: ['memory', 'self-control'] }))).toEqual(['cups', 'wait'])
   })
 
   it('filters by difficulty', () => {
@@ -50,6 +58,16 @@ describe('filterGames', () => {
   })
 
   it('combines conditions', () => {
-    expect(ids(filterGames(games, { type: 'scent', difficulty: 3 }))).toEqual([])
+    expect(ids(filterGames(games, { types: ['scent'], difficulty: 3 }))).toEqual([])
+  })
+})
+
+describe('toggleType', () => {
+  it('adds a type that is not selected', () => {
+    expect(toggleType(['scent'], 'memory')).toEqual(['scent', 'memory'])
+  })
+
+  it('removes a type that is already selected', () => {
+    expect(toggleType(['scent', 'memory'], 'scent')).toEqual(['memory'])
   })
 })
