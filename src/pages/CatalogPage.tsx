@@ -1,18 +1,32 @@
-import { useState } from 'react'
+import { useState, type CSSProperties } from 'react'
 import { Link } from 'react-router'
 import { filterGames, toggleType, type CatalogFilter } from '../catalog/filterGames'
+import { groupGamesByType } from '../catalog/groupGames'
 import GameTags from '../components/GameTags.tsx'
+import HeroDog, { PawTrail } from '../components/HeroDog.tsx'
+import TypeIcon from '../components/TypeIcon.tsx'
 import { games } from '../content/games'
-import { DIFFICULTIES, GAME_TYPE_LABELS, GAME_TYPES, type Difficulty } from '../content/schema'
+import {
+  DIFFICULTIES,
+  GAME_TYPE_LABELS,
+  GAME_TYPE_TAGLINES,
+  GAME_TYPES,
+  type Difficulty,
+} from '../content/schema'
+
+// Cards beyond this index appear together, so a long list never waits on the stagger.
+const MAX_STAGGER = 6
 
 function CatalogPage() {
   const [filter, setFilter] = useState<CatalogFilter>({})
   const selectedTypes = filter.types ?? []
   const visible = filterGames(games, filter)
+  const groups = groupGamesByType(visible)
 
   return (
     <>
       <section className="hero">
+        <PawTrail />
         <div className="hero-text">
           <h1>Игры для собачьего ума</h1>
           <p>
@@ -25,6 +39,10 @@ function CatalogPage() {
             <li>Бесплатно</li>
           </ul>
         </div>
+        <p className="hero-bubble" aria-hidden="true">
+          Гав! Сыграем?
+        </p>
+        <HeroDog />
       </section>
 
       <div className="type-filter" role="group" aria-label="Тип игры">
@@ -45,6 +63,7 @@ function CatalogPage() {
             aria-pressed={selectedTypes.includes(type)}
             onClick={() => setFilter({ ...filter, types: toggleType(selectedTypes, type) })}
           >
+            <TypeIcon type={type} />
             {GAME_TYPE_LABELS[type]}{' '}
             <span className="chip-count">{games.filter((game) => game.types.includes(type)).length}</span>
           </button>
@@ -82,21 +101,40 @@ function CatalogPage() {
         Найдено игр: {visible.length}
       </p>
 
-      {visible.length === 0 ? (
-        <p className="empty">Под эти условия игр пока нет. Попробуйте изменить фильтры.</p>
-      ) : (
-        <ul className="game-list">
-          {visible.map((game) => (
-            <li key={game.id}>
-              <Link to={`/games/${game.id}`} className="game-card" data-type={game.types[0]}>
-                <h2>{game.title}</h2>
-                <p>{game.goal}</p>
-                <GameTags game={game} showVideoBadge />
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+      {groups.length === 0 && <p className="empty">Под эти условия игр пока нет. Попробуйте изменить фильтры.</p>}
+
+      {groups.map((group) => (
+        <section key={group.type} className="type-section" data-type={group.type}>
+          <header className="type-heading">
+            <span className="type-heading-icon">
+              <TypeIcon type={group.type} />
+            </span>
+            <div>
+              <h2>{GAME_TYPE_LABELS[group.type]}</h2>
+              <p>{GAME_TYPE_TAGLINES[group.type]}</p>
+            </div>
+          </header>
+          <ul className="game-list">
+            {group.games.map((game, index) => (
+              <li key={game.id} style={{ '--i': Math.min(index, MAX_STAGGER) } as CSSProperties}>
+                <Link to={`/games/${game.id}`} className="game-card">
+                  <span className="card-badge">
+                    <TypeIcon type={group.type} />
+                  </span>
+                  <div className="card-body">
+                    <h3>{game.title}</h3>
+                    <p>{game.goal}</p>
+                    <GameTags game={game} showVideoBadge />
+                  </div>
+                  <span className="card-mark">
+                    <TypeIcon type={group.type} />
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
     </>
   )
 }

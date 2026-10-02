@@ -9,6 +9,13 @@ export const GAME_TYPE_LABELS: Record<GameType, string> = {
   'self-control': 'Самоконтроль',
 }
 
+export const GAME_TYPE_TAGLINES: Record<GameType, string> = {
+  scent: 'Найти носом то, чего не видно глазами',
+  memory: 'Запомнить, где спрятано, и не забыть',
+  thinking: 'Догадаться, как добраться до лакомства',
+  'self-control': 'Дождаться разрешения, даже когда очень хочется',
+}
+
 export const DIFFICULTIES = [1, 2, 3, 4, 5] as const
 
 const text = z.string().trim().min(1)

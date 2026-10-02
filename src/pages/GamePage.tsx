@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router'
 import GameMediaView from '../components/GameMediaView.tsx'
 import GameTags from '../components/GameTags.tsx'
+import TypeIcon from '../components/TypeIcon.tsx'
 import { findGame } from '../content/games'
 import type { Game } from '../content/schema'
 
@@ -35,6 +36,9 @@ function GamePage() {
       </Link>
 
       <header className="game-head">
+        <span className="game-head-icon">
+          <TypeIcon type={game.types[0]} />
+        </span>
         <h1>{game.title}</h1>
         <GameTags game={game} />
         <p className="goal">{game.goal}</p>
