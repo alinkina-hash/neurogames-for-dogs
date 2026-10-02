@@ -18,6 +18,14 @@ export const GAME_TYPE_TAGLINES: Record<GameType, string> = {
 
 export const DIFFICULTIES = [1, 2, 3, 4, 5] as const
 
+export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
+  1: 'Очень легко',
+  2: 'Легко',
+  3: 'Средне',
+  4: 'Сложно',
+  5: 'Очень сложно',
+}
+
 const text = z.string().trim().min(1)
 
 const mediaSchema = z.discriminatedUnion('kind', [

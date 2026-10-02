@@ -4,7 +4,6 @@ export interface CatalogFilter {
   /** Games matching any of these types are kept; empty or missing means all types. */
   types?: GameType[]
   difficulty?: Difficulty
-  noEquipment?: boolean
 }
 
 export function filterGames(games: Game[], filter: CatalogFilter): Game[] {
@@ -12,8 +11,7 @@ export function filterGames(games: Game[], filter: CatalogFilter): Game[] {
   return games.filter(
     (game) =>
       (types.length === 0 || game.types.some((type) => types.includes(type))) &&
-      (!filter.difficulty || game.difficulty === filter.difficulty) &&
-      (!filter.noEquipment || game.equipment.length === 0),
+      (!filter.difficulty || game.difficulty === filter.difficulty),
   )
 }
 

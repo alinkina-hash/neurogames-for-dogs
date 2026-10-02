@@ -9,6 +9,7 @@ import WhyBlock from '../components/WhyBlock.tsx'
 import { games } from '../content/games'
 import {
   DIFFICULTIES,
+  DIFFICULTY_LABELS,
   GAME_TYPE_LABELS,
   GAME_TYPE_TAGLINES,
   GAME_TYPES,
@@ -85,18 +86,10 @@ function CatalogPage() {
             <option value="">Любая</option>
             {DIFFICULTIES.map((difficulty) => (
               <option key={difficulty} value={difficulty}>
-                {'★'.repeat(difficulty) + '☆'.repeat(DIFFICULTIES.length - difficulty)}
+                {'★'.repeat(difficulty) + '☆'.repeat(DIFFICULTIES.length - difficulty)} {DIFFICULTY_LABELS[difficulty]}
               </option>
             ))}
           </select>
-        </label>
-        <label className="checkbox">
-          <input
-            type="checkbox"
-            checked={filter.noEquipment ?? false}
-            onChange={(event) => setFilter({ ...filter, noEquipment: event.target.checked })}
-          />
-          Без инвентаря
         </label>
       </form>
 

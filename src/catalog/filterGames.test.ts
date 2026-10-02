@@ -53,10 +53,6 @@ describe('filterGames', () => {
     expect(ids(filterGames(games, { difficulty: 2 }))).toEqual(['cups'])
   })
 
-  it('keeps only games that need no equipment', () => {
-    expect(ids(filterGames(games, { noEquipment: true }))).toEqual(['wait'])
-  })
-
   it('combines conditions', () => {
     expect(ids(filterGames(games, { types: ['scent'], difficulty: 3 }))).toEqual([])
   })
