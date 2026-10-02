@@ -1,4 +1,5 @@
 import { Link, Route, Routes } from 'react-router'
+import ScrollManager from './components/ScrollManager.tsx'
 import CatalogPage from './pages/CatalogPage.tsx'
 import GamePage from './pages/GamePage.tsx'
 
@@ -20,6 +21,7 @@ function App() {
           Нейроигры для собак
         </Link>
       </header>
+      <ScrollManager />
       <main>
         <Routes>
           <Route path="/" element={<CatalogPage />} />

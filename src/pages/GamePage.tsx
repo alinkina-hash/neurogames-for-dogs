@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router'
+import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import GameMediaView from '../components/GameMediaView.tsx'
 import GameTags from '../components/GameTags.tsx'
 import TypeIcon from '../components/TypeIcon.tsx'
@@ -12,6 +12,30 @@ const ADAPTATION_LABELS: Record<keyof NonNullable<Game['adaptations']>, string> 
   large: 'Крупная собака',
 }
 
+/**
+ * Goes back in history when the user came from inside the app, so the catalogue
+ * keeps its scroll position; falls back to a plain link for direct visits.
+ */
+function BackLink() {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const cameFromApp = location.key !== 'default'
+
+  return (
+    <Link
+      to="/"
+      className="back-link"
+      onClick={(event) => {
+        if (!cameFromApp) return
+        event.preventDefault()
+        navigate(-1)
+      }}
+    >
+      ← В каталог
+    </Link>
+  )
+}
+
 function GamePage() {
   const { id } = useParams()
   const game = findGame(id)
@@ -20,9 +44,7 @@ function GamePage() {
     return (
       <>
         <p>Такой игры нет.</p>
-        <Link to="/" className="back-link">
-          ← В каталог
-        </Link>
+        <BackLink />
       </>
     )
   }
@@ -31,9 +53,7 @@ function GamePage() {
 
   return (
     <article className="game" data-type={game.types[0]}>
-      <Link to="/" className="back-link">
-        ← В каталог
-      </Link>
+      <BackLink />
 
       <header className="game-head">
         <span className="game-head-icon">
