@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router'
 import SkillRow from '../../components/cogtest/SkillRow'
 import Delta from '../../components/cogtest/Delta'
@@ -26,6 +27,55 @@ function rawInWords(result: TaskResult & { status: 'done' }): string {
     return result.found === false ? 'не нашла за 2 минуты' : `время: ${result.seconds} с`
   }
   return ''
+}
+
+const NOTE_DELAY_MS = 500
+
+/** The note saves itself shortly after typing stops, on blur, when the page is hidden and on leaving. */
+function NoteField({ initial, onSave }: { initial: string; onSave: (note: string) => void }) {
+  const [value, setValue] = useState(initial)
+  const pending = useRef<string | null>(null)
+  const timer = useRef<number | undefined>(undefined)
+  const save = useRef(onSave)
+  useEffect(() => {
+    save.current = onSave
+  })
+
+  const flush = useCallback(() => {
+    window.clearTimeout(timer.current)
+    timer.current = undefined
+    if (pending.current === null) return
+    const note = pending.current.trim()
+    pending.current = null
+    save.current(note)
+  }, [])
+
+  useEffect(() => {
+    function onVisibility() {
+      if (document.visibilityState === 'hidden') flush()
+    }
+    document.addEventListener('visibilitychange', onVisibility)
+    window.addEventListener('pagehide', flush)
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility)
+      window.removeEventListener('pagehide', flush)
+      flush()
+    }
+  }, [flush])
+
+  return (
+    <textarea
+      rows={3}
+      value={value}
+      onChange={(event) => {
+        setValue(event.target.value)
+        pending.current = event.target.value
+        window.clearTimeout(timer.current)
+        timer.current = window.setTimeout(flush, NOTE_DELAY_MS)
+      }}
+      onBlur={flush}
+    />
+  )
 }
 
 function NotFound() {
@@ -153,13 +203,10 @@ function TestResultPage() {
         <h2>Заметка</h2>
         <label className="result-note">
           Условия теста, настроение собаки (необязательно)
-          <textarea
+          <NoteField
             key={test.id}
-            rows={3}
-            defaultValue={test.note ?? ''}
-            onBlur={(event) =>
-              dispatch({ type: 'setNote', testId: test.id, note: event.target.value.trim() })
-            }
+            initial={test.note ?? ''}
+            onSave={(note) => dispatch({ type: 'setNote', testId: test.id, note })}
           />
         </label>
       </section>
