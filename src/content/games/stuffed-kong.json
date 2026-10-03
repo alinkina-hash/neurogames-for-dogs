@@ -1,7 +1,9 @@
 {
   "id": "stuffed-kong",
   "title": "Начинённый конг",
-  "types": ["thinking"],
+  "types": [
+    "thinking"
+  ],
   "goal": "Собака выясняет, как достать корм из прочной резиновой игрушки: вылизать, перевернуть, покатать.",
   "difficulty": 2,
   "equipment": [
@@ -9,7 +11,10 @@
     "сухой корм, влажный корм или мягкое лакомство для собак"
   ],
   "prepMinutes": 5,
-  "sessionMinutes": { "min": 10, "max": 20 },
+  "sessionMinutes": {
+    "min": 10,
+    "max": 20
+  },
   "media": [
     {
       "kind": "youtube",
@@ -25,9 +30,18 @@
     "Заберите игрушку, когда она опустеет, и вымойте её."
   ],
   "levels": [
-    { "level": 1, "description": "Сухой корм лежит свободно и высыпается при катании." },
-    { "level": 2, "description": "Слои сухого и влажного корма, набитые плотно." },
-    { "level": 3, "description": "Наполненная слоями игрушка заморожена на 4–6 часов." }
+    {
+      "level": 1,
+      "description": "Сухой корм лежит свободно и высыпается при катании."
+    },
+    {
+      "level": 2,
+      "description": "Слои сухого и влажного корма, набитые плотно."
+    },
+    {
+      "level": 3,
+      "description": "Наполненная слоями игрушка заморожена на 4–6 часов."
+    }
   ],
   "stopSignals": [
     "Собака грызёт и откусывает куски игрушки.",
@@ -44,5 +58,60 @@
     "puppy": "Возьмите мягкую щенячью версию игрушки и наполняйте свободно.",
     "senior": "Подходит пожилым собакам: спокойное занятие лёжа. Не замораживайте, если у собаки больные зубы."
   },
-  "sources": [{ "title": "KONG: How to Stuff a KONG", "url": "https://kongcompany.com/learn/stuff-a-kong" }]
+  "variations": [
+    {
+      "title": "Лёд с лакомством",
+      "difficulty": 2,
+      "description": "Корм, замороженный в воде или бульоне в формочке для льда. Собака лижет и грызёт кубик, пока не доберётся до корма. Хорошо в жару.",
+      "steps": [
+        "Положите в ячейки формочки для льда по нескольку кусочков корма.",
+        "Залейте водой или несолёным бульоном без лука и чеснока и заморозьте.",
+        "Выдайте собаке один-два кубика на коврике или на улице.",
+        "Следите, чтобы собака не глотала крупные куски льда целиком."
+      ],
+      "media": [
+        {
+          "kind": "youtube",
+          "url": "https://www.youtube.com/watch?v=4cdHvQmtjhU",
+          "title": "Занятие с кубиками льда (видео на английском)"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Non-stop dogwear: 7 homemade games that stimulate your dog mentally (Frozen goodies)",
+          "url": "https://www.nonstopdogwear.com/en/magazine/7-diy-dog-games"
+        }
+      ]
+    },
+    {
+      "title": "Перец вместо конга",
+      "difficulty": 2,
+      "description": "Половинка сладкого перца служит съедобной кормушкой: её наполняют кормом и замораживают.",
+      "steps": [
+        "Разрежьте сладкий перец пополам и уберите семена.",
+        "Наполните половинки обычным кормом; сухой корм сначала размочите в тёплой воде.",
+        "Заморозьте и выдайте собаке.",
+        "Если собака раньше не ела перец, сначала дайте ей попробовать пару кусочков: новое может не подойти чувствительному желудку."
+      ],
+      "media": [
+        {
+          "kind": "youtube",
+          "url": "https://www.youtube.com/watch?v=2QrOXchWLgs",
+          "title": "Перец с начинкой для собаки (видео на английском)"
+        }
+      ],
+      "sources": [
+        {
+          "title": "PetsRadar: dog food enrichment hack with a bell pepper",
+          "url": "https://www.petsradar.com/news/try-this-tasty-dog-food-enrichment-hack-for-a-treat-your-pup-will-love-spoiler-alert-it-costs-less-than-a-dollar"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "KONG: How to Stuff a KONG",
+      "url": "https://kongcompany.com/learn/stuff-a-kong"
+    }
+  ]
 }
