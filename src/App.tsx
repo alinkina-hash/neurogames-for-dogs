@@ -5,15 +5,8 @@ import ScrollManager from "./components/ScrollManager.tsx";
 import CatalogPage from "./pages/CatalogPage.tsx";
 import GamePage from "./pages/GamePage.tsx";
 import TestRunPage from "./pages/profile/TestRunPage.tsx";
-
-function Placeholder({ text }: { text: string }) {
-  return (
-    <div className="placeholder-page">
-      <p>Скоро здесь будет {text}.</p>
-      <Link to="/profile">← К профилям</Link>
-    </div>
-  );
-}
+import TestResultPage from "./pages/profile/TestResultPage.tsx";
+import DogProfilePage from "./pages/profile/DogProfilePage.tsx";
 
 function ModeSwitch() {
   const { pathname } = useLocation();
@@ -62,11 +55,11 @@ function App() {
             />
             <Route
               path="/profile/result/:testId"
-              element={<Placeholder text="результат теста" />}
+              element={<TestResultPage />}
             />
             <Route
               path="/profile/dog/:dogId"
-              element={<Placeholder text="профиль собаки" />}
+              element={<DogProfilePage />}
             />
             <Route path="*" element={<p>Страница не найдена.</p>} />
           </Routes>

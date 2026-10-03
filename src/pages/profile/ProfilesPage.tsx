@@ -4,28 +4,9 @@ import StartTestButton from "../../components/cogtest/StartTestButton.tsx";
 import { useCogStoreContext } from "../../cogtest/CogStoreContext";
 import type { DogInput } from "../../cogtest/reducer";
 import { exportStore, parseImport } from "../../cogtest/storage";
+import { formatDate } from "../../cogtest/format";
 import { summarizeTest } from "../../cogtest/scoring";
 import type { Dog, Store } from "../../cogtest/types";
-
-const MONTHS = [
-  "января",
-  "февраля",
-  "марта",
-  "апреля",
-  "мая",
-  "июня",
-  "июля",
-  "августа",
-  "сентября",
-  "октября",
-  "ноября",
-  "декабря",
-];
-
-function formatDate(iso: string): string {
-  const date = new Date(iso);
-  return `${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
-}
 
 function localDay(): string {
   const now = new Date();
