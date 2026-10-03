@@ -4,6 +4,7 @@ import ProfilesPage from "./pages/profile/ProfilesPage.tsx";
 import ScrollManager from "./components/ScrollManager.tsx";
 import CatalogPage from "./pages/CatalogPage.tsx";
 import GamePage from "./pages/GamePage.tsx";
+import TestRunPage from "./pages/profile/TestRunPage.tsx";
 
 function Placeholder({ text }: { text: string }) {
   return (
@@ -57,7 +58,7 @@ function App() {
             <Route path="/profile" element={<ProfilesPage />} />
             <Route
               path="/profile/run/:testId"
-              element={<Placeholder text="прохождение теста" />}
+              element={<TestRunPage />}
             />
             <Route
               path="/profile/result/:testId"

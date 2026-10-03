@@ -1563,3 +1563,213 @@ a.chip {
   outline: 4px solid #1d6fe0;
   outline-offset: 3px;
 }
+
+/* Test run */
+
+.test-run {
+  display: grid;
+  gap: 14px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.test-dog {
+  margin: 0;
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
+.test-task h1,
+.test-run h1 {
+  margin: 0 0 8px;
+  overflow-wrap: anywhere;
+}
+
+.test-task h2 {
+  margin: 18px 0 8px;
+  font-size: 1.125rem;
+}
+
+.test-progress {
+  margin: 0 0 6px;
+  font-size: 1.125rem;
+  font-weight: 900;
+}
+
+.test-skill {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 4px 14px 4px 8px;
+  margin: 0 0 10px;
+  font-weight: 900;
+  background: var(--type);
+  border: 2.5px solid var(--ink);
+  border-radius: 999px;
+}
+
+.test-skill .type-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.test-goal {
+  font-size: 1.125rem;
+}
+
+.test-equipment,
+.test-checklist {
+  padding-left: 22px;
+  margin: 0;
+}
+
+.test-checklist li {
+  margin-bottom: 8px;
+}
+
+.test-related {
+  margin: 16px 0 0;
+  font-weight: 800;
+}
+
+.test-stop-signal {
+  padding: 12px 16px;
+  margin: 18px 0 0;
+  font-weight: 800;
+  background: var(--warn-bg);
+  border: var(--outline);
+  border-radius: 16px;
+}
+
+.test-disclaimer {
+  padding: 12px 16px;
+  font-size: 0.9375rem;
+  background: var(--bg);
+  border: 2.5px dashed var(--ink);
+  border-radius: 16px;
+}
+
+.test-run .test-next {
+  justify-content: center;
+  width: 100%;
+  min-height: 56px;
+  margin-top: 14px;
+  font-size: 1.25rem;
+}
+
+.test-run .test-next:disabled {
+  cursor: not-allowed;
+  background: #e8dcc0;
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+.test-run .test-secondary {
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  margin-top: 12px;
+  background: var(--surface);
+}
+
+.trial-list,
+.outcome-list {
+  display: grid;
+  gap: 12px;
+}
+
+.trial-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.trial-name {
+  flex: 1 0 100%;
+  font-weight: 900;
+}
+
+.trial-row .chip {
+  flex: 1 1 120px;
+  justify-content: center;
+  min-height: 52px;
+}
+
+.outcome-button {
+  justify-content: flex-start;
+  min-height: 56px;
+  padding: 8px 16px;
+  text-align: left;
+}
+
+.test-recorded {
+  margin: 10px 0 0;
+  font-weight: 900;
+  text-align: center;
+}
+
+.test-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.skip-reasons {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  margin-top: 12px;
+  background: var(--bg);
+  border: 2.5px dashed var(--ink);
+  border-radius: 16px;
+}
+
+.skip-reasons p {
+  margin: 0;
+  font-weight: 900;
+}
+
+.skip-reasons .chip {
+  justify-content: flex-start;
+  min-height: 52px;
+}
+
+.stopwatch {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+}
+
+.stopwatch-digits {
+  font-family: var(--display);
+  font-size: 4.5rem;
+  font-weight: 900;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.stopwatch-unit {
+  font-size: 1.5rem;
+}
+
+.stopwatch-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
+
+.stopwatch-main {
+  justify-content: center;
+  min-width: 160px;
+  min-height: 64px;
+  font-size: 1.5rem;
+}
+
+.stopwatch .chip:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
