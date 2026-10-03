@@ -1852,7 +1852,7 @@ a.chip {
 
 .skill-row {
   display: grid;
-  grid-template-columns: 144px minmax(40px, 1fr) auto 3.4rem;
+  grid-template-columns: minmax(0, 144px) minmax(40px, 1fr) auto 3.4rem;
   gap: 4px 8px;
   align-items: center;
   font-size: 0.9375rem;
@@ -1860,7 +1860,7 @@ a.chip {
 
 /* Result page: the «было N» + arrow line sits under the bar. */
 .skill-row-detail {
-  grid-template-columns: 144px minmax(40px, 1fr) auto;
+  grid-template-columns: minmax(0, 144px) minmax(40px, 1fr) auto;
 }
 
 .skill-row-detail .skill-change {
@@ -1878,6 +1878,7 @@ a.chip {
   align-items: center;
   min-width: 0;
   font-weight: 800;
+  white-space: nowrap;
 }
 
 .skill-name .type-icon {
@@ -1888,6 +1889,21 @@ a.chip {
   background: var(--type);
   border: 2px solid var(--ink);
   border-radius: 50%;
+}
+
+@media (max-width: 380px) {
+  .skill-row {
+    grid-template-columns: minmax(0, 144px) minmax(32px, 1fr) auto 2.6rem;
+    gap: 4px 6px;
+  }
+
+  .skill-row-detail {
+    grid-template-columns: minmax(0, 144px) minmax(32px, 1fr) auto;
+  }
+
+  .skill-name {
+    gap: 4px;
+  }
 }
 
 .skill-bar {
@@ -2078,6 +2094,7 @@ a.chip {
 
 .feed {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
   padding: 0;
   margin: 0;
