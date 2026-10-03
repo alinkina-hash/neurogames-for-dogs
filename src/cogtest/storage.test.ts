@@ -77,6 +77,18 @@ describe('loadStore / saveStore', () => {
     expect(saveStore(throwing, sample)).toBe(false)
     expect(saveStore(null, sample)).toBe(false)
   })
+
+  it('refuses to save an invalid store and leaves storage untouched', () => {
+    const before = JSON.stringify(sample)
+    const storage = fakeStorage(before)
+    const invalid = JSON.parse(withTask({ status: 'done', score: 3, seconds: -2 })) as Store
+    expect(saveStore(storage, invalid)).toBe(false)
+    expect(storage.getItem(STORAGE_KEY)).toBe(before)
+    const orphan: Store = { ...sample, dogs: [] }
+    expect(saveStore(storage, orphan)).toBe(false)
+    expect(storage.getItem(STORAGE_KEY)).toBe(before)
+    expect(loadStore(storage)).toEqual({ kind: 'ok', store: sample })
+  })
 })
 
 describe('schema strictness', () => {

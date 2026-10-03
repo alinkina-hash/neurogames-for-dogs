@@ -98,8 +98,10 @@ export function loadStore(storage: Pick<Storage, 'getItem'> | null): LoadResult 
   return result.ok ? { kind: 'ok', store: result.store } : { kind: 'corrupt', raw }
 }
 
+/** Writes the store; refuses (false) an invalid one so storage never holds data that cannot be loaded. */
 export function saveStore(storage: Pick<Storage, 'setItem'> | null, store: Store): boolean {
   if (!storage) return false
+  if (!storeSchema.safeParse(store).success) return false
   try {
     storage.setItem(STORAGE_KEY, JSON.stringify(store))
     return true

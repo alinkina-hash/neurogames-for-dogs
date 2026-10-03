@@ -6,7 +6,10 @@ interface StopwatchProps {
   onReset?(): void
 }
 
-/** Whole-second stopwatch. Time comes from Date.now() deltas, so throttled timers do not drift. */
+/**
+ * Whole-second stopwatch. Time comes from performance.now() deltas, so throttled timers do not drift
+ * and wall-clock changes do not affect it; the value is never negative.
+ */
 function Stopwatch({ limitSeconds, onStop, onReset }: StopwatchProps) {
   const [running, setRunning] = useState(false)
   const [seconds, setSeconds] = useState(0)
@@ -25,11 +28,11 @@ function Stopwatch({ limitSeconds, onStop, onReset }: StopwatchProps) {
   useEffect(() => clear, [clear])
 
   function elapsed() {
-    return Math.floor((Date.now() - startedAt.current) / 1000)
+    return Math.max(0, Math.floor((performance.now() - startedAt.current) / 1000))
   }
 
   function start() {
-    startedAt.current = Date.now()
+    startedAt.current = performance.now()
     setSeconds(0)
     setRunning(true)
     clear()
