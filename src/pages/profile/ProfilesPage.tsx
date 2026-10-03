@@ -1,42 +1,42 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
-import { Link } from "react-router";
-import StartTestButton from "../../components/cogtest/StartTestButton.tsx";
-import { useCogStoreContext } from "../../cogtest/CogStoreContext";
-import { latestFinished, type DogInput } from "../../cogtest/reducer";
-import { exportStore, parseImport } from "../../cogtest/storage";
-import { formatDate } from "../../cogtest/format";
-import { summarizeTest } from "../../cogtest/scoring";
-import type { Dog, Store } from "../../cogtest/types";
+import { useState, type ChangeEvent, type FormEvent } from 'react'
+import { Link } from 'react-router'
+import StartTestButton from '../../components/cogtest/StartTestButton.tsx'
+import { useCogStoreContext } from '../../cogtest/CogStoreContext'
+import { latestFinished, type DogInput } from '../../cogtest/reducer'
+import { exportStore, parseImport } from '../../cogtest/storage'
+import { formatDate } from '../../cogtest/format'
+import { summarizeTest } from '../../cogtest/scoring'
+import type { Dog, Store } from '../../cogtest/types'
 
 function localDay(): string {
-  const now = new Date();
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  const now = new Date()
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
 }
 
 function download(name: string, text: string) {
   const url = URL.createObjectURL(
-    new Blob([text], { type: "application/json" }),
-  );
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = name;
-  document.body.append(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
+    new Blob([text], { type: 'application/json' }),
+  )
+  const link = document.createElement('a')
+  link.href = url
+  link.download = name
+  document.body.append(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(url)
 }
 
-const EMPTY_DOG: DogInput = { name: "", breed: "", birthMonth: "" };
+const EMPTY_DOG: DogInput = { name: '', breed: '', birthMonth: '' }
 
 function DogFields({
   value,
   onChange,
   label,
 }: {
-  value: DogInput;
-  onChange: (v: DogInput) => void;
-  label?: string;
+  value: DogInput
+  onChange: (v: DogInput) => void
+  label?: string
 }) {
   return (
     <fieldset className="profile-fields">
@@ -54,7 +54,7 @@ function DogFields({
         Порода (необязательно)
         <input
           type="text"
-          value={value.breed ?? ""}
+          value={value.breed ?? ''}
           onChange={(e) => onChange({ ...value, breed: e.target.value })}
         />
       </label>
@@ -62,36 +62,36 @@ function DogFields({
         Месяц рождения (необязательно)
         <input
           type="month"
-          value={value.birthMonth ?? ""}
+          value={value.birthMonth ?? ''}
           onChange={(e) => onChange({ ...value, birthMonth: e.target.value })}
         />
       </label>
     </fieldset>
-  );
+  )
 }
 
 function Onboarding({ onSave }: { onSave: (dogs: DogInput[]) => void }) {
-  const [raw, setRaw] = useState("1");
-  const [count, setCount] = useState(1);
+  const [raw, setRaw] = useState('1')
+  const [count, setCount] = useState(1)
   const [dogs, setDogs] = useState<DogInput[]>(() =>
     Array.from({ length: 10 }, () => EMPTY_DOG),
-  );
+  )
 
   // The raw text stays editable; the number of forms follows the last value in 1..10.
   function changeCount(event: ChangeEvent<HTMLInputElement>) {
-    const text = event.target.value;
-    setRaw(text);
-    const n = Math.floor(Number(text));
-    if (text.trim() !== "" && n >= 1 && n <= 10) setCount(n);
+    const text = event.target.value
+    setRaw(text)
+    const n = Math.floor(Number(text))
+    if (text.trim() !== '' && n >= 1 && n <= 10) setCount(n)
   }
 
   function normalizeCount() {
-    setRaw(String(count));
+    setRaw(String(count))
   }
 
   function submit(event: FormEvent) {
-    event.preventDefault();
-    onSave(dogs.slice(0, count));
+    event.preventDefault()
+    onSave(dogs.slice(0, count))
   }
 
   return (
@@ -122,7 +122,7 @@ function Onboarding({ onSave }: { onSave: (dogs: DogInput[]) => void }) {
         Сохранить
       </button>
     </form>
-  );
+  )
 }
 
 function DogEditForm({
@@ -131,15 +131,15 @@ function DogEditForm({
   onSubmit,
   onCancel,
 }: {
-  initial: DogInput;
-  submitLabel: string;
-  onSubmit: (dog: DogInput) => void;
-  onCancel: () => void;
+  initial: DogInput
+  submitLabel: string
+  onSubmit: (dog: DogInput) => void
+  onCancel: () => void
 }) {
-  const [dog, setDog] = useState(initial);
+  const [dog, setDog] = useState(initial)
   function submit(event: FormEvent) {
-    event.preventDefault();
-    onSubmit(dog);
+    event.preventDefault()
+    onSubmit(dog)
   }
   return (
     <form className="block profile-form" onSubmit={submit}>
@@ -153,56 +153,56 @@ function DogEditForm({
         </button>
       </div>
     </form>
-  );
+  )
 }
 
 function lastResult(store: Store, dog: Dog): string {
-  const last = latestFinished(store, dog.id);
-  if (!last?.finishedAt) return "Тестов пока нет";
-  const total = summarizeTest(last.tasks).total;
-  return `${formatDate(last.finishedAt)}: ${total === null ? "неполный" : `${total} из 24`}`;
+  const last = latestFinished(store, dog.id)
+  if (!last?.finishedAt) return 'Тестов пока нет'
+  const total = summarizeTest(last.tasks).total
+  return `${formatDate(last.finishedAt)}: ${total === null ? 'неполный' : `${total} из 24`}`
 }
 
 function ProfilesPage() {
   const { store, status, corruptRaw, dispatch, resetCorrupt } =
-    useCogStoreContext();
-  const [editing, setEditing] = useState<string | "new" | null>(null);
-  const [importError, setImportError] = useState("");
+    useCogStoreContext()
+  const [editing, setEditing] = useState<string | 'new' | null>(null)
+  const [importError, setImportError] = useState('')
 
   function exportData() {
-    download(`neurogames-backup-${localDay()}.json`, exportStore(store));
+    download(`neurogames-backup-${localDay()}.json`, exportStore(store))
   }
 
   async function importData(event: ChangeEvent<HTMLInputElement>) {
-    const input = event.target;
-    const file = input.files?.[0];
-    if (!file) return;
-    setImportError("");
-    let text = "";
+    const input = event.target
+    const file = input.files?.[0]
+    if (!file) return
+    setImportError('')
+    let text = ''
     try {
-      text = await file.text();
+      text = await file.text()
     } catch {
-      input.value = "";
-      setImportError("Это не файл копии: не удалось прочитать JSON.");
-      return;
+      input.value = ''
+      setImportError('Это не файл копии: не удалось прочитать JSON.')
+      return
     }
-    const result = parseImport(text);
-    input.value = "";
+    const result = parseImport(text)
+    input.value = ''
     if (!result.ok) {
       setImportError(
-        result.error === "not-json"
-          ? "Это не файл копии: не удалось прочитать JSON."
-          : "Файл не подходит: в нём нет данных нейроигр или они повреждены.",
-      );
-      return;
+        result.error === 'not-json'
+          ? 'Это не файл копии: не удалось прочитать JSON.'
+          : 'Файл не подходит: в нём нет данных нейроигр или они повреждены.',
+      )
+      return
     }
     if (
       window.confirm(
-        "Заменить текущие данные данными из файла? Текущие собаки и тесты будут удалены.",
+        'Заменить текущие данные данными из файла? Текущие собаки и тесты будут удалены.',
       )
     ) {
-      dispatch({ type: "replaceAll", store: result.store });
-      setEditing(null);
+      dispatch({ type: 'replaceAll', store: result.store })
+      setEditing(null)
     }
   }
 
@@ -212,13 +212,13 @@ function ProfilesPage() {
         `Удалить собаку «${dog.name}»? Вся история тестов этой собаки будет удалена.`,
       )
     ) {
-      dispatch({ type: "deleteDog", dogId: dog.id });
+      dispatch({ type: 'deleteDog', dogId: dog.id })
     }
   }
 
-  const now = () => new Date().toISOString();
+  const now = () => new Date().toISOString()
 
-  if (status === "corrupt") {
+  if (status === 'corrupt') {
     return (
       <>
         <h1>Профиль</h1>
@@ -230,7 +230,7 @@ function ProfilesPage() {
               type="button"
               className="button"
               onClick={() =>
-                download("neurogames-corrupt.json", corruptRaw ?? "")
+                download('neurogames-corrupt.json', corruptRaw ?? '')
               }
             >
               Скачать данные
@@ -241,13 +241,13 @@ function ProfilesPage() {
           </div>
         </section>
       </>
-    );
+    )
   }
 
   return (
     <>
       <h1>Профиль</h1>
-      {status === "unavailable" && (
+      {status === 'unavailable' && (
         <p className="profile-warning" role="alert">
           Браузер не даёт сохранять данные: результаты пропадут после закрытия
           страницы
@@ -256,7 +256,7 @@ function ProfilesPage() {
 
       {store.dogs.length === 0 ? (
         <Onboarding
-          onSave={(dogs) => dispatch({ type: "addDogs", dogs, now: now() })}
+          onSave={(dogs) => dispatch({ type: 'addDogs', dogs, now: now() })}
         />
       ) : (
         <>
@@ -267,13 +267,13 @@ function ProfilesPage() {
                   <DogEditForm
                     initial={{
                       name: dog.name,
-                      breed: dog.breed ?? "",
-                      birthMonth: dog.birthMonth ?? "",
+                      breed: dog.breed ?? '',
+                      birthMonth: dog.birthMonth ?? '',
                     }}
                     submitLabel="Сохранить"
                     onSubmit={(input) => {
-                      dispatch({ type: "updateDog", dogId: dog.id, ...input });
-                      setEditing(null);
+                      dispatch({ type: 'updateDog', dogId: dog.id, ...input })
+                      setEditing(null)
                     }}
                     onCancel={() => setEditing(null)}
                   />
@@ -307,13 +307,13 @@ function ProfilesPage() {
             ))}
           </ul>
 
-          {editing === "new" ? (
+          {editing === 'new' ? (
             <DogEditForm
               initial={EMPTY_DOG}
               submitLabel="Добавить"
               onSubmit={(input) => {
-                dispatch({ type: "addDogs", dogs: [input], now: now() });
-                setEditing(null);
+                dispatch({ type: 'addDogs', dogs: [input], now: now() })
+                setEditing(null)
               }}
               onCancel={() => setEditing(null)}
             />
@@ -321,7 +321,7 @@ function ProfilesPage() {
             <button
               type="button"
               className="button"
-              onClick={() => setEditing("new")}
+              onClick={() => setEditing('new')}
             >
               Добавить собаку
             </button>
@@ -359,7 +359,7 @@ function ProfilesPage() {
         Тест не является ветеринарной диагностикой.
       </p>
     </>
-  );
+  )
 }
 
-export default ProfilesPage;
+export default ProfilesPage

@@ -1,26 +1,26 @@
-import { Link, Route, Routes, useLocation } from "react-router";
-import { CogStoreProvider } from "./cogtest/CogStoreContext.tsx";
-import ProfilesPage from "./pages/profile/ProfilesPage.tsx";
-import ScrollManager from "./components/ScrollManager.tsx";
-import CatalogPage from "./pages/CatalogPage.tsx";
-import GamePage from "./pages/GamePage.tsx";
-import TestRunPage from "./pages/profile/TestRunPage.tsx";
-import TestResultPage from "./pages/profile/TestResultPage.tsx";
-import DogProfilePage from "./pages/profile/DogProfilePage.tsx";
+import { Link, Route, Routes, useLocation } from 'react-router'
+import { CogStoreProvider } from './cogtest/CogStoreContext.tsx'
+import ProfilesPage from './pages/profile/ProfilesPage.tsx'
+import ScrollManager from './components/ScrollManager.tsx'
+import CatalogPage from './pages/CatalogPage.tsx'
+import GamePage from './pages/GamePage.tsx'
+import TestRunPage from './pages/profile/TestRunPage.tsx'
+import TestResultPage from './pages/profile/TestResultPage.tsx'
+import DogProfilePage from './pages/profile/DogProfilePage.tsx'
 
 function ModeSwitch() {
-  const { pathname } = useLocation();
-  const inProfile = pathname === "/profile" || pathname.startsWith("/profile/");
+  const { pathname } = useLocation()
+  const inProfile = pathname === '/profile' || pathname.startsWith('/profile/')
   return (
     <nav className="mode-switch" aria-label="Разделы">
-      <Link to="/" aria-current={inProfile ? undefined : "page"}>
+      <Link to="/" aria-current={inProfile ? undefined : 'page'}>
         Игры
       </Link>
-      <Link to="/profile" aria-current={inProfile ? "page" : undefined}>
+      <Link to="/profile" aria-current={inProfile ? 'page' : undefined}>
         Профиль
       </Link>
     </nav>
-  );
+  )
 }
 
 function App() {
@@ -72,7 +72,7 @@ function App() {
         </p>
       </footer>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
