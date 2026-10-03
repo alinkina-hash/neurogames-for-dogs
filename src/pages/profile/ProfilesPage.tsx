@@ -90,23 +90,27 @@ function DogFields({
 }
 
 function Onboarding({ onSave }: { onSave: (dogs: DogInput[]) => void }) {
+  const [raw, setRaw] = useState("1");
   const [count, setCount] = useState(1);
-  const [dogs, setDogs] = useState<DogInput[]>([EMPTY_DOG]);
+  const [dogs, setDogs] = useState<DogInput[]>(() =>
+    Array.from({ length: 10 }, () => EMPTY_DOG),
+  );
 
+  // The raw text stays editable; the number of forms follows the last value in 1..10.
   function changeCount(event: ChangeEvent<HTMLInputElement>) {
-    const next = Math.min(
-      10,
-      Math.max(1, Math.floor(Number(event.target.value)) || 1),
-    );
-    setCount(next);
-    setDogs((prev) =>
-      Array.from({ length: next }, (_, i) => prev[i] ?? EMPTY_DOG),
-    );
+    const text = event.target.value;
+    setRaw(text);
+    const n = Math.floor(Number(text));
+    if (text.trim() !== "" && n >= 1 && n <= 10) setCount(n);
+  }
+
+  function normalizeCount() {
+    setRaw(String(count));
   }
 
   function submit(event: FormEvent) {
     event.preventDefault();
-    onSave(dogs);
+    onSave(dogs.slice(0, count));
   }
 
   return (
@@ -118,11 +122,12 @@ function Onboarding({ onSave }: { onSave: (dogs: DogInput[]) => void }) {
           type="number"
           min={1}
           max={10}
-          value={count}
+          value={raw}
           onChange={changeCount}
+          onBlur={normalizeCount}
         />
       </label>
-      {dogs.map((dog, i) => (
+      {dogs.slice(0, count).map((dog, i) => (
         <DogFields
           key={i}
           label={count > 1 ? `Собака ${i + 1}` : undefined}
@@ -194,7 +199,15 @@ function ProfilesPage() {
     const file = input.files?.[0];
     if (!file) return;
     setImportError("");
-    const result = parseImport(await file.text());
+    let text = "";
+    try {
+      text = await file.text();
+    } catch {
+      input.value = "";
+      setImportError("Это не файл копии: не удалось прочитать JSON.");
+      return;
+    }
+    const result = parseImport(text);
     input.value = "";
     if (!result.ok) {
       setImportError(

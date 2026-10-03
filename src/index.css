@@ -1558,3 +1558,8 @@ a.chip {
 .profile-warning.block-danger {
   background: var(--danger-bg);
 }
+
+.profile-file:focus-within {
+  outline: 4px solid #1d6fe0;
+  outline-offset: 3px;
+}
