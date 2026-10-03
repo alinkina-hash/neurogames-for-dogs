@@ -56,7 +56,8 @@ function Stopwatch({ limitSeconds, onStart, onStop, onReset }: StopwatchProps) {
   }
 
   function stop() {
-    if (performance.now() - startedAt.current < STOP_GUARD_MS) return
+    const sinceStart = performance.now() - startedAt.current
+    if (sinceStart >= 0 && sinceStart < STOP_GUARD_MS) return
     clear()
     const value = elapsed()
     const limit = callbacks.current.limitSeconds
