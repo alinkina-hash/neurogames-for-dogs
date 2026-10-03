@@ -44,6 +44,24 @@ describe('addDogs', () => {
   })
 })
 
+describe('birthMonth validation', () => {
+  it('drops an invalid birthMonth on add and update, keeping the store schema-valid', () => {
+    const bad = ['2020-5', '2020-13', 'May 2020', '2020-00']
+    let s = run(emptyStore(), [
+      { type: 'addDogs', dogs: bad.map((birthMonth, i) => ({ name: `D${i}`, birthMonth })), now: NOW },
+    ])
+    expect(s.dogs.every((d) => !('birthMonth' in d))).toBe(true)
+    s = run(s, [{ type: 'updateDog', dogId: 'id-1', name: 'D0', birthMonth: '2020-13' }])
+    expect('birthMonth' in s.dogs[0]).toBe(false)
+    expect(storeSchema.safeParse(s).success).toBe(true)
+  })
+
+  it('keeps a valid birthMonth', () => {
+    const s = run(emptyStore(), [{ type: 'addDogs', dogs: [{ name: 'A', birthMonth: '2020-12' }], now: NOW }])
+    expect(s.dogs[0].birthMonth).toBe('2020-12')
+  })
+})
+
 describe('updateDog', () => {
   it('updates and trims, removing emptied fields', () => {
     const s0 = run(emptyStore(), [

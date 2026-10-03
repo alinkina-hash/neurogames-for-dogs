@@ -38,8 +38,13 @@ export function useCogStore(): {
   const [corruptRaw, setCorruptRaw] = useState(loaded.kind === 'corrupt' ? loaded.raw : undefined)
 
   const storeRef = useRef(store)
+  // Ids handed out by startTest that the store may not reflect yet (before the next render).
+  const pendingStarts = useRef(new Map<string, string>())
   useEffect(() => {
     storeRef.current = store
+    for (const [dogId, testId] of pendingStarts.current) {
+      if (store.tests.some((test) => test.id === testId)) pendingStarts.current.delete(dogId)
+    }
     if (status !== 'ok' || store === initialStore) return
     // Persisting is synchronization with an external system; its failure is reported via status.
     // oxlint-disable-next-line react/set-state-in-effect
@@ -49,7 +54,10 @@ export function useCogStore(): {
   const startTest = useCallback((dogId: string) => {
     const existing = unfinishedTest(storeRef.current, dogId)
     if (existing) return existing.id
+    const pending = pendingStarts.current.get(dogId)
+    if (pending) return pending
     const testId = makeId()
+    pendingStarts.current.set(dogId, testId)
     dispatch({ type: 'startTest', dogId, now: new Date().toISOString(), testId })
     return testId
   }, [])

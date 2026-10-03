@@ -18,6 +18,8 @@ const TASK_IDS = [
 const _allTaskIds: TaskId extends (typeof TASK_IDS)[number] ? true : never = true
 void _allTaskIds
 
+export const BIRTH_MONTH_RE = /^\d{4}-(0[1-9]|1[0-2])$/
+
 const timestamp = z.iso.datetime()
 const text = z.string().trim().min(1)
 
@@ -40,7 +42,7 @@ const dogSchema = z.strictObject({
   id: text,
   name: text,
   breed: z.string().optional(),
-  birthMonth: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/).optional(),
+  birthMonth: z.string().regex(BIRTH_MONTH_RE).optional(),
   createdAt: timestamp,
 })
 

@@ -1,5 +1,5 @@
 import { PROTOCOL_VERSION } from './tasks'
-import { makeId } from './storage'
+import { BIRTH_MONTH_RE, makeId } from './storage'
 import type { CogTest, Dog, Store, TaskId, TaskResult } from './types'
 
 export interface DogInput {
@@ -27,7 +27,8 @@ function cleanDog(input: DogInput): Pick<Dog, 'name' | 'breed' | 'birthMonth'> |
   const name = input.name.trim()
   if (!name) return null
   const breed = input.breed?.trim()
-  const birthMonth = input.birthMonth?.trim()
+  const trimmedMonth = input.birthMonth?.trim()
+  const birthMonth = trimmedMonth && BIRTH_MONTH_RE.test(trimmedMonth) ? trimmedMonth : undefined
   return {
     name,
     ...(breed ? { breed } : {}),
