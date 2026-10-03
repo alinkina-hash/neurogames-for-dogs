@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+/** A tap on «Стоп» this soon after «Старт» is taken as a double tap and ignored. */
+const STOP_GUARD_MS = 600
+
 interface StopwatchProps {
   limitSeconds?: number
+  onStart?(): void
   onStop(seconds: number): void
   onReset?(): void
 }
@@ -10,7 +14,7 @@ interface StopwatchProps {
  * Whole-second stopwatch. Time comes from performance.now() deltas, so throttled timers do not drift
  * and wall-clock changes do not affect it; the value is never negative.
  */
-function Stopwatch({ limitSeconds, onStop, onReset }: StopwatchProps) {
+function Stopwatch({ limitSeconds, onStart, onStop, onReset }: StopwatchProps) {
   const [running, setRunning] = useState(false)
   const [seconds, setSeconds] = useState(0)
   const startedAt = useRef(0)
@@ -35,6 +39,7 @@ function Stopwatch({ limitSeconds, onStop, onReset }: StopwatchProps) {
     startedAt.current = performance.now()
     setSeconds(0)
     setRunning(true)
+    onStart?.()
     clear()
     timer.current = window.setInterval(() => {
       const { limitSeconds: limit, onStop: stop } = callbacks.current
@@ -51,6 +56,7 @@ function Stopwatch({ limitSeconds, onStop, onReset }: StopwatchProps) {
   }
 
   function stop() {
+    if (performance.now() - startedAt.current < STOP_GUARD_MS) return
     clear()
     const value = elapsed()
     const limit = callbacks.current.limitSeconds

@@ -80,6 +80,7 @@ function Recorder({ task, existing, isLast, onSave }: RecorderProps) {
   )
   const [seconds, setSeconds] = useState<number | null>(done?.seconds ?? null)
   const [found, setFound] = useState<boolean | undefined>(done?.found)
+  const [running, setRunning] = useState(false)
   const [outcome, setOutcome] = useState<DetourOutcome | null>(done?.outcome ?? null)
   const nextLabel = isLast ? 'Завершить' : 'Дальше'
 
@@ -128,11 +129,18 @@ function Recorder({ task, existing, isLast, onSave }: RecorderProps) {
       <>
         <Stopwatch
           limitSeconds={limit}
+          onStart={() => {
+            setRunning(true)
+            setSeconds(null)
+            setFound(undefined)
+          }}
           onStop={(value) => {
+            setRunning(false)
             setSeconds(value)
             setFound(undefined)
           }}
           onReset={() => {
+            setRunning(false)
             setSeconds(null)
             setFound(undefined)
           }}
@@ -150,8 +158,8 @@ function Recorder({ task, existing, isLast, onSave }: RecorderProps) {
         <button
           type="button"
           className="button test-next"
-          disabled={seconds === null}
-          onClick={() => seconds !== null && onSave(timerRaw(seconds, found))}
+          disabled={running || seconds === null}
+          onClick={() => !running && seconds !== null && onSave(timerRaw(seconds, found))}
         >
           {nextLabel}
         </button>
