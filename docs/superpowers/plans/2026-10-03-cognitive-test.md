@@ -29,7 +29,7 @@
 - `localStorage` throws (private mode, blocked site data, quota) → the app must still work for the session and show a one-line warning that results will not be saved. Test in Task 3.
 - Stored JSON is corrupt or fails the schema → no crash; recovery notice with "download the data" and "start over". Test in Task 3 (`loadStore` returns `{ kind: 'corrupt' }`) and Task 5 (screen).
 - Imported file is not JSON, fails the schema, or has a test whose `dogId` is unknown → error message, current data unchanged. Test in Task 3.
-- URL `#/test/run/<id>` for an unknown or already finished test → "Тест не найден" with a link back, or redirect to the result for a finished test. Covered in Task 6.
+- URL `#/profile/run/<id>` for an unknown or already finished test → "Тест не найден" with a link back, or redirect to the result for a finished test. Covered in Task 6.
 - Starting a test for a dog that already has an unfinished one → resume the existing test instead of creating a second. Test in Task 4.
 
 ---
@@ -47,13 +47,13 @@
 | `src/cogtest/reducer.ts` | Pure `reducer(store, action)` with all mutations |
 | `src/cogtest/useCogStore.ts` | React hook: reducer + persistence + storage status |
 | `src/cogtest/CogStoreContext.tsx` | One shared store for all test pages: `CogStoreProvider`, `useCogStoreContext()` |
-| `src/pages/test/TestHomePage.tsx` | `#/test`: onboarding, dog list, export/import, recovery |
-| `src/pages/test/TestRunPage.tsx` | `#/test/run/:testId`: checklist and tasks |
-| `src/pages/test/TestResultPage.tsx` | `#/test/result/:testId`: scores, comparison, recommendations, note |
-| `src/pages/test/DogHistoryPage.tsx` | `#/test/dog/:dogId`: history list and charts |
+| `src/pages/profile/ProfilesPage.tsx` | `#/profile`: onboarding, dog list, export/import, recovery |
+| `src/pages/profile/TestRunPage.tsx` | `#/profile/run/:testId`: checklist and tasks |
+| `src/pages/profile/TestResultPage.tsx` | `#/profile/result/:testId`: scores, comparison, recommendations, note |
+| `src/pages/profile/DogProfilePage.tsx` | `#/profile/dog/:dogId`: history list and charts |
 | `src/components/cogtest/Stopwatch.tsx` | Start/stop/reset stopwatch with optional auto-stop limit |
 | `src/components/cogtest/TrendChart.tsx` | Inline SVG line chart of numeric points over dates |
-| `src/App.tsx`, `src/index.css` | Routes, «Игры / Тест» switch in the header, styles |
+| `src/App.tsx`, `src/index.css` | Routes, «Игры / Профиль» switch in the header, styles |
 
 ---
 
@@ -205,17 +205,17 @@ Plus `summarizeTest` cases:
 
 ---
 
-### Task 5: Routes, header switch and the test home page
+### Task 5: Routes, header switch and the profiles page
 
 **Files:**
-- Create: `src/cogtest/CogStoreContext.tsx`, `src/pages/test/TestHomePage.tsx`
+- Create: `src/cogtest/CogStoreContext.tsx`, `src/pages/profile/ProfilesPage.tsx`
 - Modify: `src/App.tsx` (provider, routes, header switch), `src/index.css` (append a `/* Cognitive test */` section)
 
 **Interfaces:**
 - Consumes: `useCogStore`, `exportStore`, `parseImport`, `unfinishedTest`, `previousTest`, `daysBetween`.
-- Produces: `CogStoreProvider({ children })` wrapping `<Routes>` in `App.tsx`, and `useCogStoreContext(): ReturnType<typeof useCogStore>` (throws if used outside the provider); routes `/test`, `/test/run/:testId`, `/test/result/:testId`, `/test/dog/:dogId` (later tasks fill the last three; add placeholder elements now). Header gets a two-link switch «Игры» (`/`) and «Тест» (`/test`) with `aria-current="page"` on the active one.
+- Produces: `CogStoreProvider({ children })` wrapping `<Routes>` in `App.tsx`, and `useCogStoreContext(): ReturnType<typeof useCogStore>` (throws if used outside the provider); routes `/profile`, `/profile/run/:testId`, `/profile/result/:testId`, `/profile/dog/:dogId` (later tasks fill the last three; add placeholder elements now). Header gets a two-link switch «Игры» (`/`) and «Профиль» (`/profile`) with `aria-current="page"` on the active one.
 
-Behaviour of `#/test`:
+Behaviour of `#/profile`:
 - No dogs → onboarding: «Сколько у вас собак?» number input 1–10, then that many forms (name required, breed, birth month `type="month"`), button «Сохранить». All test pages read the store through `useCogStoreContext()`, never by calling `useCogStore()` themselves.
 - With dogs → one card per dog: name, last finished test date and total (or «неполный»), buttons «Пройти тест» (or «Продолжить тест» when unfinished), «История», «Изменить», «Удалить» (confirm with `window.confirm` naming the dog and saying the history will be deleted). «Добавить собаку».
 - «Пройти тест» shows the 30-day warning inline when `daysBetween(previous.startedAt, now) < 30`, with «Всё равно пройти».
@@ -224,9 +224,9 @@ Behaviour of `#/test`:
 - `status === 'corrupt'` → recovery block: «Сохранённые данные повреждены», buttons «Скачать данные» (the raw string) and «Начать заново» (`resetCorrupt`).
 - Disclaimer «Тест не является ветеринарной диагностикой.»
 
-- [ ] **Step 1: Implement** context provider, routes, header switch, `TestHomePage`, styles.
+- [ ] **Step 1: Implement** context provider, routes, header switch, `ProfilesPage`, styles.
 - [ ] **Step 2: Run** `npm run lint && npx tsc -b && npm test` — Expected: no errors, all tests pass.
-- [ ] **Step 3: Verify in the browser:** `npm run build:single`, open `dist-single/index.html#/test`, create two dogs, reload, both remain; export downloads a file; import of a `.txt` file shows the error.
+- [ ] **Step 3: Verify in the browser:** `npm run build:single`, open `dist-single/index.html#/profile`, create two dogs, reload, both remain; export downloads a file; import of a `.txt` file shows the error.
 - [ ] **Step 4: Commit** `git commit -m "feat(test): test home page with dog profiles, export and import"`
 
 ---
@@ -234,7 +234,7 @@ Behaviour of `#/test`:
 ### Task 6: Running the test
 
 **Files:**
-- Create: `src/pages/test/TestRunPage.tsx`, `src/components/cogtest/Stopwatch.tsx`
+- Create: `src/pages/profile/TestRunPage.tsx`, `src/components/cogtest/Stopwatch.tsx`
 - Modify: `src/index.css`
 
 **Interfaces:**
@@ -242,7 +242,7 @@ Behaviour of `#/test`:
 - Produces: `Stopwatch` props `{ limitSeconds?: number; onStop(seconds: number): void }` — shows whole seconds, auto-stops at the limit and calls `onStop(limit)`.
 
 Behaviour:
-- Unknown `testId` → «Тест не найден» + link to `#/test`. Finished test → `<Navigate to={/test/result/:id} replace />`.
+- Unknown `testId` → «Тест не найден» + link to `#/profile`. Finished test → `<Navigate to={/profile/result/:id} replace />`.
 - First screen of an unfinished test with no recorded tasks: preparation checklist (all equipment from `TEST_TASKS`, quiet room, slightly hungry dog, helper if possible) and the disclaimer; «Начать».
 - Then the first task without a result, one per screen: number «Задание N из 8», skill label, goal, equipment, steps, stop-signals reminder («Если собака нервничает — пропустите задание»), and the recorder:
   - `trials`: three rows «Попытка 1–3» with «Верно» / «Неверно» toggles; «Дальше» enabled when all three are set.
@@ -254,20 +254,20 @@ Behaviour:
 
 - [ ] **Step 1: Implement** `Stopwatch` and `TestRunPage`, styles in the cartoon style (big tap targets ≥ 44 px).
 - [ ] **Step 2: Run** `npm run lint && npx tsc -b && npm test` — Expected: clean.
-- [ ] **Step 3: Verify in the browser** (390 px wide): start a test, answer tasks 1–3, reload the page, «Продолжить тест» resumes at task 4; skip task 7 with a reason; finish; lands on `#/test/result/<id>`; opening `#/test/run/<id>` again redirects to the result; `#/test/run/nope` shows «Тест не найден».
+- [ ] **Step 3: Verify in the browser** (390 px wide): start a test, answer tasks 1–3, reload the page, «Продолжить тест» resumes at task 4; skip task 7 with a reason; finish; lands on `#/profile/result/<id>`; opening `#/profile/run/<id>` again redirects to the result; `#/profile/run/nope` shows «Тест не найден».
 - [ ] **Step 4: Commit** `git commit -m "feat(test): guided test run with stopwatch, trials and skipping"`
 
 ---
 
-### Task 7: Result and history pages
+### Task 7: Result page and dog profile page
 
 **Files:**
-- Create: `src/pages/test/TestResultPage.tsx`, `src/pages/test/DogHistoryPage.tsx`, `src/components/cogtest/TrendChart.tsx`
+- Create: `src/pages/profile/TestResultPage.tsx`, `src/pages/profile/DogProfilePage.tsx`, `src/components/cogtest/TrendChart.tsx`
 - Modify: `src/index.css`
 
 **Interfaces:**
 - Consumes: `summarizeTest`, `previousTest`, `compareTests`, `recommendGames`, `games`, `GAME_TYPE_LABELS`, `TypeIcon`, `useCogStoreContext()`.
-- Produces: `TrendChart` props `{ points: { date: string; value: number }[]; max: number; label: string }` — inline SVG polyline with dots and date labels; renders «Пока мало данных» for fewer than two points.
+- Produces: `TrendChart` props `{ points: { date: string; value: number }[]; max: number; label: string; color?: string; compact?: boolean }` — inline SVG polyline with dots; the full variant labels dates and values, the compact one draws only the line and the last dot; renders «Пока мало данных» for fewer than two points.
 
 Result page:
 - Header: dog name, test date, total `N из 24` or «Тест неполный».
@@ -278,13 +278,15 @@ Result page:
 - Retest hint and practice-effect note (copy from the spec); disclaimer.
 - Links «История собаки» and «К собакам».
 
-History page:
-- List of the dog's tests, newest first; unfinished one on top with «Продолжить»; each finished test links to its result.
-- `TrendChart` of the total for finished complete tests; four small `TrendChart`s, one per skill, using tests where that skill is complete.
+Dog profile page (`#/profile/dog/:dogId`), layout agreed on the mockup, top to bottom:
+- Header: name, breed, age from `birthMonth` (e.g. «4 года»), number of finished tests; button «Пройти тест» / «Продолжить тест»; hint «Следующий тест лучше после <date>» = latest finished `startedAt` + 30 days, hidden once that date has passed.
+- «Общий балл»: `TrendChart` over finished complete tests, max 24.
+- «По навыкам»: 2×2 grid of compact `TrendChart`s, one per skill in the catalog type colour, title shows the latest skill score out of 6 and the arrow vs the previous test; points = tests where that skill is complete.
+- «Тесты» feed, newest first: the latest finished test expanded (date, total and arrow, four skill bars with score and arrow, link «Подробнее о тесте» → result page); older tests collapsed to «date — total — arrow» and expandable on tap (`<details>`); an unfinished test as a yellow card on top «Тест от <date> не закончен» with «Продолжить», excluded from charts.
 
 - [ ] **Step 1: Implement** the components and pages.
 - [ ] **Step 2: Run** `npm run lint && npx tsc -b && npm test` — Expected: clean.
-- [ ] **Step 3: Verify in the browser:** finish two tests for the same dog with different answers; the second result shows arrows matching `compareTests`; the history page shows two points on the total chart; a dog with one test shows «Пока мало данных».
+- [ ] **Step 3: Verify in the browser:** finish two tests for the same dog with different answers; the second result shows arrows matching `compareTests`; the dog profile page shows two points on the total chart, four skill mini charts and the feed with the latest test expanded; a dog with one test shows «Пока мало данных».
 - [ ] **Step 4: Commit** `git commit -m "feat(test): results with comparison, recommendations and history charts"`
 
 ---
