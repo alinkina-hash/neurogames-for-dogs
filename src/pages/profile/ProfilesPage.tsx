@@ -24,20 +24,30 @@ function download(name: string, text: string) {
   document.body.append(link)
   link.click()
   link.remove()
-  URL.revokeObjectURL(url)
+  // Firefox and Safari may still be starting the download right after click().
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
 const EMPTY_DOG: DogInput = { name: '', breed: '', birthMonth: '' }
+
+const NAME_ERROR = 'Укажите имя собаки'
+
+function hasName(dog: DogInput): boolean {
+  return dog.name.trim() !== ''
+}
 
 function DogFields({
   value,
   onChange,
   label,
+  showError = false,
 }: {
   value: DogInput
   onChange: (v: DogInput) => void
   label?: string
+  showError?: boolean
 }) {
+  const nameError = showError && !hasName(value)
   return (
     <fieldset className="profile-fields">
       {label && <legend>{label}</legend>}
@@ -46,10 +56,16 @@ function DogFields({
         <input
           type="text"
           required
+          aria-invalid={nameError || undefined}
           value={value.name}
           onChange={(e) => onChange({ ...value, name: e.target.value })}
         />
       </label>
+      {nameError && (
+        <p className="profile-error" role="alert">
+          {NAME_ERROR}
+        </p>
+      )}
       <label>
         Порода (необязательно)
         <input
@@ -76,6 +92,7 @@ function Onboarding({ onSave }: { onSave: (dogs: DogInput[]) => void }) {
   const [dogs, setDogs] = useState<DogInput[]>(() =>
     Array.from({ length: 10 }, () => EMPTY_DOG),
   )
+  const [checked, setChecked] = useState(false)
 
   // The raw text stays editable; the number of forms follows the last value in 1..10.
   function changeCount(event: ChangeEvent<HTMLInputElement>) {
@@ -91,7 +108,9 @@ function Onboarding({ onSave }: { onSave: (dogs: DogInput[]) => void }) {
 
   function submit(event: FormEvent) {
     event.preventDefault()
-    onSave(dogs.slice(0, count))
+    const list = dogs.slice(0, count)
+    setChecked(true)
+    if (list.every(hasName)) onSave(list)
   }
 
   return (
@@ -113,6 +132,7 @@ function Onboarding({ onSave }: { onSave: (dogs: DogInput[]) => void }) {
           key={i}
           label={count > 1 ? `Собака ${i + 1}` : undefined}
           value={dog}
+          showError={checked}
           onChange={(v) =>
             setDogs((prev) => prev.map((d, j) => (j === i ? v : d)))
           }
@@ -137,13 +157,15 @@ function DogEditForm({
   onCancel: () => void
 }) {
   const [dog, setDog] = useState(initial)
+  const [checked, setChecked] = useState(false)
   function submit(event: FormEvent) {
     event.preventDefault()
-    onSubmit(dog)
+    setChecked(true)
+    if (hasName(dog)) onSubmit(dog)
   }
   return (
     <form className="block profile-form" onSubmit={submit}>
-      <DogFields value={dog} onChange={setDog} />
+      <DogFields value={dog} onChange={setDog} showError={checked} />
       <div className="profile-actions">
         <button type="submit" className="button">
           {submitLabel}
@@ -158,9 +180,9 @@ function DogEditForm({
 
 function lastResult(store: Store, dog: Dog): string {
   const last = latestFinished(store, dog.id)
-  if (!last?.finishedAt) return 'Тестов пока нет'
+  if (!last) return 'Тестов пока нет'
   const total = summarizeTest(last.tasks).total
-  return `${formatDate(last.finishedAt)}: ${total === null ? 'неполный' : `${total} из 24`}`
+  return `${formatDate(last.startedAt)}: ${total === null ? 'неполный' : `${total} из 24`}`
 }
 
 function ProfilesPage() {
@@ -343,7 +365,7 @@ function ProfilesPage() {
             Загрузить копию
             <input
               type="file"
-              accept="application/json"
+              accept="application/json,.json"
               onChange={importData}
             />
           </label>
