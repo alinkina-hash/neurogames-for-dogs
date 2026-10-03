@@ -6,6 +6,7 @@ import { useCogStoreContext } from '../../cogtest/CogStoreContext'
 import { scoreTask } from '../../cogtest/scoring'
 import { TEST_TASKS } from '../../cogtest/tasks'
 import {
+  DETOUR_OUTCOME_LABELS,
   SKIP_REASON_LABELS,
   type DetourOutcome,
   type RawResult,
@@ -16,12 +17,10 @@ import {
 import { findGame } from '../../content/games'
 import { GAME_TYPE_LABELS } from '../../content/schema'
 
-const OUTCOMES: { value: DetourOutcome; label: string }[] = [
-  { value: 'fast', label: 'Обошла за 30 секунд или быстрее' },
-  { value: 'slow', label: 'Обошла, но дольше 30 секунд' },
-  { value: 'barges', label: 'Лезет напролом или через верх' },
-  { value: 'gave-up', label: 'Бросила попытки' },
-]
+const OUTCOMES = (Object.keys(DETOUR_OUTCOME_LABELS) as DetourOutcome[]).map((value) => ({
+  value,
+  label: DETOUR_OUTCOME_LABELS[value],
+}))
 
 const ALL_EQUIPMENT = [...new Set(TEST_TASKS.flatMap((task) => task.equipment))]
 

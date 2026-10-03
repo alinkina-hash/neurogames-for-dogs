@@ -8,24 +8,20 @@ import { useCogStoreContext } from '../../cogtest/CogStoreContext'
 import { formatDate } from '../../cogtest/format'
 import { summarizeTest } from '../../cogtest/scoring'
 import { TEST_TASKS } from '../../cogtest/tasks'
-import { SKIP_REASON_LABELS, type DetourOutcome, type TaskResult } from '../../cogtest/types'
+import { DETOUR_OUTCOME_LABELS, SKIP_REASON_LABELS, type TaskResult } from '../../cogtest/types'
 import { games } from '../../content/games'
 import { recommendGames } from '../../cogtest/recommend'
 import { GAME_TYPE_LABELS, GAME_TYPES, type GameType } from '../../content/schema'
-
-const OUTCOME_WORDS: Record<DetourOutcome, string> = {
-  fast: 'обошла за 30 секунд или быстрее',
-  slow: 'обошла, но дольше 30 секунд',
-  barges: 'лезла напролом или через верх',
-  'gave-up': 'бросила попытки',
-}
 
 /** Raw task data in words, for the per-task details. */
 function rawInWords(result: TaskResult & { status: 'done' }): string {
   if (result.trials) {
     return `верных попыток: ${result.trials.filter(Boolean).length} из ${result.trials.length}`
   }
-  if (result.outcome) return OUTCOME_WORDS[result.outcome]
+  if (result.outcome) {
+    const label = DETOUR_OUTCOME_LABELS[result.outcome]
+    return label.charAt(0).toLowerCase() + label.slice(1)
+  }
   if (result.seconds !== undefined) {
     return result.found === false ? 'не нашла за 2 минуты' : `время: ${result.seconds} с`
   }

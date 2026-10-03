@@ -12,6 +12,13 @@ export type TaskId =
 
 export type DetourOutcome = 'fast' | 'slow' | 'barges' | 'gave-up'
 
+export const DETOUR_OUTCOME_LABELS: Record<DetourOutcome, string> = {
+  fast: 'Обошла за 30 секунд или быстрее',
+  slow: 'Обошла, но дольше 30 секунд',
+  barges: 'Лезет напролом или через верх',
+  'gave-up': 'Бросила попытки',
+}
+
 export type SkipReason = 'refused' | 'not-possible' | 'stressed'
 
 export const SKIP_REASON_LABELS: Record<SkipReason, string> = {

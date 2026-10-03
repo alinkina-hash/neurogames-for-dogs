@@ -14,7 +14,7 @@ interface Props {
 /** One skill line: icon, name, bar of score/max, score, «неполный» marker and the change vs the previous test. */
 function SkillRow({ skill, entry, change, showBefore = false }: Props) {
   return (
-    <li className="skill-row" data-type={skill}>
+    <li className={showBefore ? 'skill-row skill-row-detail' : 'skill-row'} data-type={skill}>
       <span className="skill-name">
         <TypeIcon type={skill} />
         {GAME_TYPE_LABELS[skill]}

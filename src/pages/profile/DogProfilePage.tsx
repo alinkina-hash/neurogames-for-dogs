@@ -7,7 +7,7 @@ import TrendChart from '../../components/cogtest/TrendChart'
 import { compareTests, previousTest } from '../../cogtest/compare'
 import { useCogStoreContext } from '../../cogtest/CogStoreContext'
 import { ageText, formatDate, formatDayMonth, testsCountText } from '../../cogtest/format'
-import { unfinishedTest } from '../../cogtest/reducer'
+import { latestFinished, unfinishedTest } from '../../cogtest/reducer'
 import { summarizeTest } from '../../cogtest/scoring'
 import type { CogTest, Store } from '../../cogtest/types'
 import { GAME_TYPE_LABELS, GAME_TYPES } from '../../content/schema'
@@ -88,7 +88,7 @@ function DogProfilePage() {
     return total === null ? [] : [{ date: t.startedAt, value: total }]
   })
 
-  const latest = finished[0]
+  const latest = latestFinished(store, dog.id)
   const nextDate = latest ? new Date(Date.parse(latest.startedAt) + 30 * DAY_MS) : undefined
   const showNext = nextDate !== undefined && nextDate.getTime() > now.getTime()
 

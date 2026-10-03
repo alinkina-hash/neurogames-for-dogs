@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { daysBetween } from "../../cogtest/compare";
 import { useCogStoreContext } from "../../cogtest/CogStoreContext";
-import { unfinishedTest } from "../../cogtest/reducer";
+import { latestFinished, unfinishedTest } from "../../cogtest/reducer";
 
 /** Starts or continues a dog's test; warns inline when the last finished test is under 30 days old. */
 function StartTestButton({ dogId }: { dogId: string }) {
@@ -11,9 +11,7 @@ function StartTestButton({ dogId }: { dogId: string }) {
   const [warning, setWarning] = useState(false);
 
   const unfinished = unfinishedTest(store, dogId);
-  const lastFinished = store.tests
-    .filter((test) => test.dogId === dogId && test.finishedAt)
-    .sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1))[0];
+  const lastFinished = latestFinished(store, dogId);
 
   function go() {
     navigate(`/profile/run/${startTest(dogId)}`);

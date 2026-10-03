@@ -22,6 +22,13 @@ export function unfinishedTest(store: Store, dogId: string): CogTest | undefined
   return store.tests.find((test) => test.dogId === dogId && !test.finishedAt)
 }
 
+/** Latest finished test of the dog by start time. */
+export function latestFinished(store: Store, dogId: string): CogTest | undefined {
+  return store.tests
+    .filter((test) => test.dogId === dogId && test.finishedAt)
+    .sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1))[0]
+}
+
 /** Trims fields and drops empty optional ones; null when the name is empty. */
 function cleanDog(input: DogInput): Pick<Dog, 'name' | 'breed' | 'birthMonth'> | null {
   const name = input.name.trim()

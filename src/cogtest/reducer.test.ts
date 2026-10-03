@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { reducer, unfinishedTest, type Action } from './reducer'
+import { latestFinished, reducer, unfinishedTest, type Action } from './reducer'
 import { emptyStore, storeSchema } from './storage'
 import type { Store } from './types'
 
@@ -132,6 +132,21 @@ describe('recordTask', () => {
     expect(
       run(s1, [{ type: 'recordTask', testId: 't1', taskId: 'detour', result: { status: 'done', score: 1 } }]),
     ).toBe(s1)
+  })
+})
+
+describe('latestFinished', () => {
+  it('picks the latest started finished test of the dog', () => {
+    const s = run(withDogs(), [
+      { type: 'startTest', dogId: 'id-1', now: '2026-07-01T10:00:00.000Z', testId: 'a' },
+      { type: 'finishTest', testId: 'a', now: '2026-09-01T10:00:00.000Z' },
+      { type: 'startTest', dogId: 'id-1', now: '2026-08-01T10:00:00.000Z', testId: 'b' },
+      { type: 'finishTest', testId: 'b', now: '2026-08-02T10:00:00.000Z' },
+      { type: 'startTest', dogId: 'id-1', now: '2026-10-01T10:00:00.000Z', testId: 'c' },
+      { type: 'startTest', dogId: 'id-2', now: '2026-10-02T10:00:00.000Z', testId: 'd' },
+    ])
+    expect(latestFinished(s, 'id-1')?.id).toBe('b')
+    expect(latestFinished(s, 'id-2')).toBeUndefined()
   })
 })
 

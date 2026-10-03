@@ -2,7 +2,7 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Link } from "react-router";
 import StartTestButton from "../../components/cogtest/StartTestButton.tsx";
 import { useCogStoreContext } from "../../cogtest/CogStoreContext";
-import type { DogInput } from "../../cogtest/reducer";
+import { latestFinished, type DogInput } from "../../cogtest/reducer";
 import { exportStore, parseImport } from "../../cogtest/storage";
 import { formatDate } from "../../cogtest/format";
 import { summarizeTest } from "../../cogtest/scoring";
@@ -157,9 +157,7 @@ function DogEditForm({
 }
 
 function lastResult(store: Store, dog: Dog): string {
-  const last = store.tests
-    .filter((test) => test.dogId === dog.id && test.finishedAt)
-    .sort((a, b) => ((a.finishedAt ?? "") < (b.finishedAt ?? "") ? 1 : -1))[0];
+  const last = latestFinished(store, dog.id);
   if (!last?.finishedAt) return "Тестов пока нет";
   const total = summarizeTest(last.tasks).total;
   return `${formatDate(last.finishedAt)}: ${total === null ? "неполный" : `${total} из 24`}`;
