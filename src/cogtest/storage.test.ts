@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { PROTOCOL_VERSION } from './tasks'
-import { STORAGE_KEY, emptyStore, exportStore, loadStore, makeId, parseImport, saveStore } from './storage'
+import { STORAGE_KEY, emptyStore, exportStore, loadStore, makeId, parseImport, saveStore, storageChange } from './storage'
 import type { Store } from './types'
 
 function fakeStorage(initial?: string) {
@@ -88,6 +88,24 @@ describe('loadStore / saveStore', () => {
     expect(saveStore(storage, orphan)).toBe(false)
     expect(storage.getItem(STORAGE_KEY)).toBe(before)
     expect(loadStore(storage)).toEqual({ kind: 'ok', store: sample })
+  })
+})
+
+describe('storageChange', () => {
+  it('ignores other keys', () => {
+    expect(storageChange('something-else', JSON.stringify(sample))).toBeNull()
+  })
+  it('reads a new valid value as the store', () => {
+    expect(storageChange(STORAGE_KEY, JSON.stringify(sample))).toEqual({ kind: 'ok', store: sample })
+  })
+  it('reports a corrupt new value with its raw text', () => {
+    const raw = withTask({ status: 'done', score: 9 })
+    expect(storageChange(STORAGE_KEY, raw)).toEqual({ kind: 'corrupt', raw })
+    expect(storageChange(STORAGE_KEY, '{bad')).toEqual({ kind: 'corrupt', raw: '{bad' })
+  })
+  it('treats a removed value or cleared storage as empty', () => {
+    expect(storageChange(STORAGE_KEY, null)).toEqual({ kind: 'empty' })
+    expect(storageChange(null, null)).toEqual({ kind: 'empty' })
   })
 })
 

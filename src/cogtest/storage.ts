@@ -93,9 +93,25 @@ export function loadStore(storage: Pick<Storage, 'getItem'> | null): LoadResult 
   } catch {
     return { kind: 'unavailable' }
   }
+  return parseStored(raw)
+}
+
+function parseStored(raw: string | null): Exclude<LoadResult, { kind: 'unavailable' }> {
   if (raw === null) return { kind: 'empty' }
   const result = parseImport(raw)
   return result.ok ? { kind: 'ok', store: result.store } : { kind: 'corrupt', raw }
+}
+
+/**
+ * What a `storage` event from another tab means for the store: null when it is about another key,
+ * otherwise the new value read like on load (a removed value or a cleared storage is empty).
+ */
+export function storageChange(
+  key: string | null,
+  newValue: string | null,
+): Exclude<LoadResult, { kind: 'unavailable' }> | null {
+  if (key !== null && key !== STORAGE_KEY) return null
+  return parseStored(key === null ? null : newValue)
 }
 
 /** Writes the store; refuses (false) an invalid one so storage never holds data that cannot be loaded. */
