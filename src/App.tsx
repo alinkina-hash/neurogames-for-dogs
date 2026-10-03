@@ -1,7 +1,33 @@
-import { Link, Route, Routes } from 'react-router'
-import ScrollManager from './components/ScrollManager.tsx'
-import CatalogPage from './pages/CatalogPage.tsx'
-import GamePage from './pages/GamePage.tsx'
+import { Link, Route, Routes, useLocation } from "react-router";
+import { CogStoreProvider } from "./cogtest/CogStoreContext.tsx";
+import ProfilesPage from "./pages/profile/ProfilesPage.tsx";
+import ScrollManager from "./components/ScrollManager.tsx";
+import CatalogPage from "./pages/CatalogPage.tsx";
+import GamePage from "./pages/GamePage.tsx";
+
+function Placeholder({ text }: { text: string }) {
+  return (
+    <div className="placeholder-page">
+      <p>Скоро здесь будет {text}.</p>
+      <Link to="/profile">← К профилям</Link>
+    </div>
+  );
+}
+
+function ModeSwitch() {
+  const { pathname } = useLocation();
+  const inProfile = pathname === "/profile" || pathname.startsWith("/profile/");
+  return (
+    <nav className="mode-switch" aria-label="Разделы">
+      <Link to="/" aria-current={inProfile ? undefined : "page"}>
+        Игры
+      </Link>
+      <Link to="/profile" aria-current={inProfile ? "page" : undefined}>
+        Профиль
+      </Link>
+    </nav>
+  );
+}
 
 function App() {
   return (
@@ -20,20 +46,39 @@ function App() {
           </svg>
           Нейроигры для собак
         </Link>
+        <ModeSwitch />
       </header>
       <ScrollManager />
       <main>
-        <Routes>
-          <Route path="/" element={<CatalogPage />} />
-          <Route path="/games/:id" element={<GamePage />} />
-          <Route path="*" element={<p>Страница не найдена.</p>} />
-        </Routes>
+        <CogStoreProvider>
+          <Routes>
+            <Route path="/" element={<CatalogPage />} />
+            <Route path="/games/:id" element={<GamePage />} />
+            <Route path="/profile" element={<ProfilesPage />} />
+            <Route
+              path="/profile/run/:testId"
+              element={<Placeholder text="прохождение теста" />}
+            />
+            <Route
+              path="/profile/result/:testId"
+              element={<Placeholder text="результат теста" />}
+            />
+            <Route
+              path="/profile/dog/:dogId"
+              element={<Placeholder text="профиль собаки" />}
+            />
+            <Route path="*" element={<p>Страница не найдена.</p>} />
+          </Routes>
+        </CogStoreProvider>
       </main>
       <footer className="app-footer">
-        <p>Это не ветеринарная рекомендация. При проблемах со здоровьем собаки посоветуйтесь с ветеринаром.</p>
+        <p>
+          Это не ветеринарная рекомендация. При проблемах со здоровьем собаки
+          посоветуйтесь с ветеринаром.
+        </p>
       </footer>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
