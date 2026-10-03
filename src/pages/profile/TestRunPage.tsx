@@ -3,7 +3,7 @@ import { Link, Navigate, useNavigate, useParams } from 'react-router'
 import Stopwatch from '../../components/cogtest/Stopwatch'
 import TypeIcon from '../../components/TypeIcon'
 import { useCogStoreContext } from '../../cogtest/CogStoreContext'
-import { scoreTask } from '../../cogtest/scoring'
+import { doneResult, timerRaw } from '../../cogtest/scoring'
 import { TEST_TASKS } from '../../cogtest/tasks'
 import {
   DETOUR_OUTCOME_LABELS,
@@ -79,6 +79,7 @@ function Recorder({ task, existing, isLast, onSave }: RecorderProps) {
     Array.from({ length: task.trialCount ?? 3 }, (_, i) => done?.trials?.[i] ?? null),
   )
   const [seconds, setSeconds] = useState<number | null>(done?.seconds ?? null)
+  const [found, setFound] = useState<boolean | undefined>(done?.found)
   const [outcome, setOutcome] = useState<DetourOutcome | null>(done?.outcome ?? null)
   const nextLabel = isLast ? 'Завершить' : 'Дальше'
 
@@ -127,8 +128,14 @@ function Recorder({ task, existing, isLast, onSave }: RecorderProps) {
       <>
         <Stopwatch
           limitSeconds={limit}
-          onStop={setSeconds}
-          onReset={() => setSeconds(null)}
+          onStop={(value) => {
+            setSeconds(value)
+            setFound(undefined)
+          }}
+          onReset={() => {
+            setSeconds(null)
+            setFound(undefined)
+          }}
         />
         {seconds !== null && <p className="test-recorded">Записано: {seconds} с</p>}
         {task.id === 'towel-find' && (
@@ -144,7 +151,7 @@ function Recorder({ task, existing, isLast, onSave }: RecorderProps) {
           type="button"
           className="button test-next"
           disabled={seconds === null}
-          onClick={() => seconds !== null && onSave({ seconds })}
+          onClick={() => seconds !== null && onSave(timerRaw(seconds, found))}
         >
           {nextLabel}
         </button>
@@ -218,8 +225,7 @@ function TestRunPage() {
   }
 
   function save(raw: RawResult) {
-    const rounded = 'seconds' in raw ? { ...raw, seconds: Math.floor(raw.seconds) } : raw
-    go({ status: 'done', score: scoreTask(task.id, rounded), ...rounded })
+    go(doneResult(task.id, raw))
   }
 
   function back() {

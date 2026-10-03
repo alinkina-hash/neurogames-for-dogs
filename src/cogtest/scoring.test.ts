@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { scoreTask, summarizeTest } from './scoring'
+import { doneResult, scoreTask, summarizeTest, timerRaw } from './scoring'
 import { PROTOCOL_VERSION, TEST_TASKS } from './tasks'
-import type { DetourOutcome, TaskId, TaskResult } from './types'
+import type { DetourOutcome, RawResult, TaskId, TaskResult } from './types'
 
 describe('scoreTask', () => {
   it.each([[0, 3], [15, 3], [15.9, 3], [16, 2], [60, 2], [61, 1], [119, 1]])(
@@ -15,6 +15,45 @@ describe('scoreTask', () => {
     'leave-it %s s → %i', (s, p) => expect(scoreTask('leave-it', { seconds: s })).toBe(p))
   it.each([[15, 3], [14, 2], [5, 2], [4, 1], [1, 1], [0.9, 0]])(
     'bowl-wait %s s → %i', (s, p) => expect(scoreTask('bowl-wait', { seconds: s })).toBe(p))
+  it.each([[120, true], [120, undefined], [150, true]])(
+    'towel-find at the 2-minute limit (%s s, found=%s) → 0', (s, found) =>
+      expect(scoreTask('towel-find', found === undefined ? { seconds: s } : { seconds: s, found })).toBe(0))
+  it.each([[Number.NaN], [-5], [Number.POSITIVE_INFINITY]])('bad seconds %s count as 0 s', (s) => {
+    expect(scoreTask('towel-find', { seconds: s, found: true })).toBe(3)
+    expect(scoreTask('leave-it', { seconds: s })).toBe(0)
+    expect(scoreTask('bowl-wait', { seconds: s })).toBe(0)
+  })
+})
+
+describe('doneResult', () => {
+  it('stores towel-find auto-stopped at the limit as not found, 0 points', () => {
+    expect(doneResult('towel-find', { seconds: 120 })).toEqual({ status: 'done', score: 0, seconds: 120, found: false })
+  })
+  it('stores «Не нашла» as not found, 0 points', () => {
+    expect(doneResult('towel-find', { seconds: 120, found: false })).toEqual({
+      status: 'done', score: 0, seconds: 120, found: false,
+    })
+  })
+  it.each([
+    ['towel-find', { seconds: 120, found: false }],
+    ['towel-find', { seconds: 120 }],
+    ['towel-find', { seconds: 14 }],
+    ['leave-it', { seconds: 30 }],
+  ] as [TaskId, RawResult][])('re-saving an unchanged %s result %j keeps it', (id, raw) => {
+    const existing = doneResult(id, raw)
+    expect(doneResult(id, timerRaw(existing.seconds!, existing.found))).toEqual(existing)
+  })
+  it('stores whole non-negative seconds', () => {
+    expect(doneResult('leave-it', { seconds: 15.7 })).toEqual({ status: 'done', score: 2, seconds: 15 })
+    expect(doneResult('bowl-wait', { seconds: -3 })).toEqual({ status: 'done', score: 0, seconds: 0 })
+    expect(doneResult('bowl-wait', { seconds: Number.NaN })).toEqual({ status: 'done', score: 0, seconds: 0 })
+  })
+  it('passes trials and outcomes through', () => {
+    expect(doneResult('detour', { outcome: 'slow' })).toEqual({ status: 'done', score: 2, outcome: 'slow' })
+    expect(doneResult('which-hand', { trials: [true, false, true] })).toEqual({
+      status: 'done', score: 2, trials: [true, false, true],
+    })
+  })
 })
 
 const order: TaskId[] = [

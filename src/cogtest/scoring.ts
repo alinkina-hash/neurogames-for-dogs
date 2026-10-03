@@ -5,6 +5,14 @@ import type { RawResult, TaskId, TaskResult, TestSummary } from './types'
 
 type Score = 0 | 1 | 2 | 3
 
+/** Towel-find: not found within 2 minutes scores 0. */
+const TOWEL_FIND_LIMIT = 120
+
+/** Whole non-negative seconds; anything non-finite or negative counts as 0 s. */
+function cleanSeconds(seconds: number): number {
+  return Number.isFinite(seconds) && seconds > 0 ? Math.floor(seconds) : 0
+}
+
 function byThresholds(seconds: number, three: number, two: number, one: number): Score {
   const s = Math.floor(seconds)
   if (s >= three) return 3
@@ -18,10 +26,10 @@ export function scoreTask(id: TaskId, raw: RawResult): Score {
   if ('outcome' in raw) {
     return { fast: 3, slow: 2, barges: 1, 'gave-up': 0 }[raw.outcome] as Score
   }
-  const seconds = Math.floor(raw.seconds)
+  const seconds = cleanSeconds(raw.seconds)
   switch (id) {
     case 'towel-find':
-      if (raw.found === false) return 0
+      if (raw.found === false || seconds >= TOWEL_FIND_LIMIT) return 0
       return seconds <= 15 ? 3 : seconds <= 60 ? 2 : 1
     case 'leave-it':
       return byThresholds(seconds, 60, 15, 3)
@@ -30,6 +38,24 @@ export function scoreTask(id: TaskId, raw: RawResult): Score {
     default:
       throw new Error(`Task ${id} does not use a timer`)
   }
+}
+
+/** Timer input as the recorder saves it; `found` is kept only when it was set. */
+export function timerRaw(seconds: number, found?: boolean): RawResult {
+  return found === undefined ? { seconds } : { seconds, found }
+}
+
+/** The stored result for a recorded task: clean seconds, towel-find at the limit marked not found. */
+export function doneResult(id: TaskId, raw: RawResult): Extract<TaskResult, { status: 'done' }> {
+  let clean = raw
+  if ('seconds' in raw) {
+    const seconds = cleanSeconds(raw.seconds)
+    clean =
+      id === 'towel-find' && (raw.found === false || seconds >= TOWEL_FIND_LIMIT)
+        ? { seconds, found: false }
+        : { ...raw, seconds }
+  }
+  return { status: 'done', score: scoreTask(id, clean), ...clean }
 }
 
 /** Skill = sum of its two tasks; a skipped task makes the skill incomplete. */
