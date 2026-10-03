@@ -154,6 +154,13 @@ function DogProfilePage() {
         </div>
       </section>
 
+      <section className="block block-note">
+        <p>
+          Рост при повторных прохождениях отчасти объясняется тем, что собака уже знакома с
+          заданиями.
+        </p>
+      </section>
+
       <section>
         <h2 className="dog-h2">Тесты</h2>
         {unfinished && (
