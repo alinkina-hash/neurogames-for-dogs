@@ -4,7 +4,7 @@
 
 **Goal:** A guided 8-task cognitive test for dogs with per-dog profiles, results stored on the device, and comparison with the previous test.
 
-**Architecture:** Pure TypeScript modules in `src/cogtest/` hold the task definitions, scoring, comparison, storage and a reducer; they are unit-tested with Vitest. React pages under `src/pages/test/` use a `useCogStore()` hook that wraps the reducer and persists to localStorage after every change. Routing stays on `HashRouter`.
+**Architecture:** Pure TypeScript modules in `src/cogtest/` hold the task definitions, scoring, comparison, storage and a reducer; they are unit-tested with Vitest. React pages under `src/pages/profile/` use a `useCogStore()` hook that wraps the reducer and persists to localStorage after every change. Routing stays on `HashRouter`.
 
 **Tech Stack:** React 19, TypeScript, Vite 8, react-router 8 (`HashRouter`), zod 4, Vitest 5. No new dependencies.
 
