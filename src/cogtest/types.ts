@@ -68,3 +68,18 @@ export interface CogTest {
   tasks: Partial<Record<TaskId, TaskResult>>
   note?: string
 }
+
+export interface Dog {
+  id: string
+  name: string
+  breed?: string
+  /** YYYY-MM */
+  birthMonth?: string
+  createdAt: string
+}
+
+export interface Store {
+  version: 1
+  dogs: Dog[]
+  tests: CogTest[]
+}
