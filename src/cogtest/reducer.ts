@@ -39,7 +39,7 @@ export function unfinishedSurvey(store: Store, dogId: string): Survey | undefine
 /** Latest finished survey of the dog by start time. */
 export function latestFinishedSurvey(store: Store, dogId: string): Survey | undefined {
   return store.surveys
-    .filter((survey) => survey.dogId === dogId && survey.finishedAt)
+    .filter((survey) => survey.dogId === dogId && survey.version === SURVEY_VERSION && survey.finishedAt)
     .sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1))[0]
 }
 

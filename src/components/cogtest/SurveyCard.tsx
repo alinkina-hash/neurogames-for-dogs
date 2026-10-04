@@ -3,14 +3,12 @@ import { useCogStoreContext } from '../../cogtest/CogStoreContext'
 import { addMonths, ageText, ageYears, formatDate, formatDayMonth, isSeniorAge } from '../../cogtest/format'
 import { unfinishedSurvey } from '../../cogtest/reducer'
 import { SURVEY_SOURCE } from '../../cogtest/surveyQuestions'
-import { previousSurvey, surveyTotal, surveyZone, ZONES } from '../../cogtest/surveyScoring'
+import { nextSurveyMonths, previousSurvey, SURVEY_MAX, SURVEY_MIN, surveyTotal, surveyZone, ZONES } from '../../cogtest/surveyScoring'
 import type { Dog, Survey } from '../../cogtest/types'
 import SurveyChange from './SurveyChange'
 import { SURVEY_BANDS } from './surveyBands'
 import StartSurveyButton from './StartSurveyButton'
 import TrendChart from './TrendChart'
-
-const MONTHS_AHEAD = 6
 
 interface Props {
   dog: Dog
@@ -33,7 +31,10 @@ function SurveyCard({ dog, now }: Props) {
     return total === null ? [] : [{ date: s.startedAt, value: total }]
   })
 
-  const next = finished[0] ? addMonths(finished[0].startedAt, MONTHS_AHEAD) : undefined
+  const next = finished[0] ? addMonths(
+        finished[0].startedAt,
+        nextSurveyMonths(surveyZone(surveyTotal(finished[0].answers) ?? 0)),
+      ) : undefined
   const showNext = next !== undefined && next.getTime() > now.getTime()
 
   function row(survey: Survey) {
@@ -65,7 +66,7 @@ function SurveyCard({ dog, now }: Props) {
         <h2>Анкета о поведении в старшем возрасте</h2>
         <p>
           13 вопросов о повседневном поведении собаки: как она ориентируется дома, узнаёт ли
-          близких, как спит и гуляет.
+          близких, насколько активна.
         </p>
         <p>
           <b>Зачем:</b> с возрастом у собак может развиться когнитивная дисфункция — собачья
@@ -105,10 +106,10 @@ function SurveyCard({ dog, now }: Props) {
             <div className="block">
               <TrendChart
                 points={points}
-                min={16}
-                max={80}
+                min={SURVEY_MIN}
+                max={SURVEY_MAX}
                 bands={SURVEY_BANDS}
-                label="Итог анкеты, от 16 до 80"
+                label={`Итог анкеты, от ${SURVEY_MIN} до ${SURVEY_MAX}`}
               />
             </div>
           )}

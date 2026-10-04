@@ -1,35 +1,25 @@
 import { Link, Navigate, useParams } from 'react-router'
 import SurveyChange from '../../components/cogtest/SurveyChange'
 import { SURVEY_BANDS } from '../../components/cogtest/surveyBands'
+import SurveyNotFound from '../../components/cogtest/SurveyNotFound'
 import { useCogStoreContext } from '../../cogtest/CogStoreContext'
 import { formatDate } from '../../cogtest/format'
 import { SURVEY_QUESTIONS, SURVEY_SOURCE, TRANSLATION_NOTE } from '../../cogtest/surveyQuestions'
-import { previousSurvey, seniorGames, surveyTotal, surveyZone, VET_NOTE, ZONES } from '../../cogtest/surveyScoring'
+import { previousSurvey, seniorGames, SURVEY_MAX, SURVEY_MIN, surveyTotal, surveyZone, VET_NOTE, ZONES } from '../../cogtest/surveyScoring'
 import { games } from '../../content/games'
 
-const MIN = 16
-const MAX = 80
+const MIN = SURVEY_MIN
+const MAX = SURVEY_MAX
 const TICKS = [16, 40, 50, 80]
 
 const percent = (value: number) => ((value - MIN) / (MAX - MIN)) * 100
-
-function NotFound() {
-  return (
-    <div className="block test-run">
-      <h1>Анкета не найдена</h1>
-      <p>
-        <a href="#/profile">← К профилям</a>
-      </p>
-    </div>
-  )
-}
 
 function SurveyResultPage() {
   const { surveyId } = useParams()
   const { store } = useCogStoreContext()
   const survey = store.surveys.find((s) => s.id === surveyId)
   const dog = survey && store.dogs.find((d) => d.id === survey.dogId)
-  if (!survey || !dog) return <NotFound />
+  if (!survey || !dog) return <SurveyNotFound />
   if (!survey.finishedAt) return <Navigate replace to={`/profile/survey/${survey.id}`} />
 
   const total = surveyTotal(survey.answers)
@@ -51,7 +41,7 @@ function SurveyResultPage() {
 
       <section className="block survey-score" data-zone={zone}>
         <div className="survey-score-head">
-          <b className="survey-score-total">{total} из 80</b>
+          <b className="survey-score-total">{total} из {SURVEY_MAX}</b>
           {beforeTotal !== null && (
             <span className="survey-score-delta">
               <SurveyChange delta={total - beforeTotal} /> к прошлой
@@ -61,7 +51,7 @@ function SurveyResultPage() {
         <div
           className="survey-zone"
           role="img"
-          aria-label={`Итог ${total} из 80, зона ${ZONES[zone].title}`}
+          aria-label={`Итог ${total} из ${SURVEY_MAX}, зона ${ZONES[zone].title}`}
         >
           {SURVEY_BANDS.map((band) => (
             <i

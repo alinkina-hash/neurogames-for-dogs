@@ -24,6 +24,14 @@ export const ZONES: Record<SurveyZone, { title: string; advice: string }> = {
 export const VET_NOTE =
   'Похожие изменения бывают не только из-за возраста, но и при боли, потере слуха или зрения, болезнях щитовидной железы. Только ветеринар может поставить диагноз.'
 
+export const SURVEY_MIN = 16
+export const SURVEY_MAX = 80
+
+/** Months until the next survey is due: sooner for the risk zone. */
+export function nextSurveyMonths(zone: SurveyZone): number {
+  return zone === 'risk' ? 3 : 6
+}
+
 /** Weighted sum (16–80); null unless all 13 questions are answered. */
 export function surveyTotal(answers: Partial<Record<SurveyQuestionId, SurveyAnswer>>): number | null {
   let total = 0

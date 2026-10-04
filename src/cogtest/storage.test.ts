@@ -194,6 +194,25 @@ describe('surveys in the store', () => {
     expect(JSON.parse(exportStore(store)).surveys).toHaveLength(2)
   })
 
+  it('serializes a store without surveys with no surveys key (rollback-safe)', () => {
+    const storage = fakeStorage()
+    expect(saveStore(storage, sample)).toBe(true)
+    const saved = JSON.parse(storage.getItem(STORAGE_KEY) as string)
+    expect('surveys' in saved).toBe(false)
+    expect('surveys' in JSON.parse(exportStore(sample))).toBe(false)
+    expect(loadStore(storage)).toEqual({ kind: 'ok', store: sample })
+    expect(parseImport(exportStore(sample))).toEqual({ ok: true, store: sample })
+  })
+
+  it('writes the surveys key when there is at least one survey', () => {
+    const store: Store = { ...sample, surveys: [survey({ answers: { pacing: 2 } })] as Store['surveys'] }
+    const storage = fakeStorage()
+    expect(saveStore(storage, store)).toBe(true)
+    expect(JSON.parse(storage.getItem(STORAGE_KEY) as string).surveys).toHaveLength(1)
+    expect(JSON.parse(exportStore(store)).surveys).toHaveLength(1)
+    expect(loadStore(storage)).toEqual({ kind: 'ok', store })
+  })
+
   it('accepts a finished survey with all 13 answers', () => {
     expect(parseImport(withSurvey(survey({ finishedAt: '2026-03-01T10:05:00.000Z' }))).ok).toBe(true)
   })

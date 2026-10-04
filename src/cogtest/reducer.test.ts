@@ -270,6 +270,13 @@ describe('surveys', () => {
     expect(latestFinishedSurvey(s, 'id-2')).toBeUndefined()
   })
 
+  it('latestFinishedSurvey ignores surveys of another version', () => {
+    const s = run(started(), answerAll('s1', 13))
+    const old: Store = { ...s, surveys: s.surveys.map((x) => ({ ...x, version: SURVEY_VERSION + 1 }) as Store['surveys'][number]) }
+    expect(latestFinishedSurvey(old, 'id-1')).toBeUndefined()
+    expect(latestFinishedSurvey(s, 'id-1')?.id).toBe('s1')
+  })
+
   it('deleteDog removes the dog surveys only', () => {
     const s = run(started(), [
       { type: 'startSurvey', dogId: 'id-2', now: NOW, surveyId: 's2' },

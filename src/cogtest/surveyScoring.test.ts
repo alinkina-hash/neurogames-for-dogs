@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { games } from '../content/games'
 import { ageYears, isSeniorAge } from './format'
 import { SURVEY_QUESTIONS } from './surveyQuestions'
-import { previousSurvey, seniorGames, surveyTotal, surveyZone } from './surveyScoring'
+import { nextSurveyMonths, previousSurvey, seniorGames, SURVEY_MAX, SURVEY_MIN, surveyTotal, surveyZone } from './surveyScoring'
 import type { Survey, SurveyAnswer, SurveyQuestionId } from './types'
 
 const ids = SURVEY_QUESTIONS.map((q) => q.id)
@@ -111,5 +111,20 @@ describe('ageYears', () => {
   it('flags seniors from 8', () => {
     expect(isSeniorAge(8)).toBe(true)
     expect(isSeniorAge(7)).toBe(false)
+  })
+})
+
+describe('nextSurveyMonths', () => {
+  it('asks again in 3 months for the risk zone, otherwise in 6', () => {
+    expect(nextSurveyMonths('risk')).toBe(3)
+    expect(nextSurveyMonths('normal')).toBe(6)
+    expect(nextSurveyMonths('signs')).toBe(6)
+  })
+})
+
+describe('survey total bounds', () => {
+  it('match the lowest and highest possible totals', () => {
+    expect(surveyTotal(answers(1))).toBe(SURVEY_MIN)
+    expect(surveyTotal(answers(5))).toBe(SURVEY_MAX)
   })
 })

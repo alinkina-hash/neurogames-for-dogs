@@ -1,22 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router'
+import SurveyNotFound from '../../components/cogtest/SurveyNotFound'
 import { useCogStoreContext } from '../../cogtest/CogStoreContext'
 import { CHANGE_INTRO, SURVEY_QUESTIONS } from '../../cogtest/surveyQuestions'
 import type { SurveyAnswer } from '../../cogtest/types'
 
 const TAP_GUARD_MS = 400
 const CHANGE_FROM_ID = 'pacingChange'
-
-function NotFound() {
-  return (
-    <div className="block test-run">
-      <h1>Анкета не найдена</h1>
-      <p>
-        <a href="#/profile">← К профилям</a>
-      </p>
-    </div>
-  )
-}
 
 function SurveyRunPage() {
   const { surveyId } = useParams()
@@ -37,7 +27,7 @@ function SurveyRunPage() {
     window.scrollTo(0, 0)
   }, [index, showIntro])
 
-  if (!survey) return <NotFound />
+  if (!survey) return <SurveyNotFound />
   if (survey.finishedAt) return <Navigate to={`/profile/survey-result/${survey.id}`} replace />
 
   const dogName = store.dogs.find((d) => d.id === survey.dogId)?.name ?? ''
@@ -50,7 +40,7 @@ function SurveyRunPage() {
           <h1>Анкета о поведении</h1>
           <p>
             13 вопросов о повседневном поведении собаки: как она ориентируется дома, узнаёт ли
-            близких, как спит и гуляет. Займёт около 5 минут.
+            близких, насколько активна. Займёт около 5 минут.
           </p>
           <p>Отвечайте о поведении за последнее время.</p>
           <p className="test-disclaimer">Это не диагноз. Анкета только помогает заметить изменения.</p>

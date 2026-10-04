@@ -148,12 +148,18 @@ export function storageChange(
   return parseStored(key === null ? null : newValue)
 }
 
+/** JSON of the store; `surveys` is written only when non-empty so older builds still accept the data. */
+function serialize(store: Store, space?: number): string {
+  const { surveys, ...rest } = store
+  return JSON.stringify(surveys.length > 0 ? store : rest, null, space)
+}
+
 /** Writes the store; refuses (false) an invalid one so storage never holds data that cannot be loaded. */
 export function saveStore(storage: Pick<Storage, 'setItem'> | null, store: Store): boolean {
   if (!storage) return false
   if (!storeSchema.safeParse(store).success) return false
   try {
-    storage.setItem(STORAGE_KEY, JSON.stringify(store))
+    storage.setItem(STORAGE_KEY, serialize(store))
     return true
   } catch {
     return false
@@ -161,7 +167,7 @@ export function saveStore(storage: Pick<Storage, 'setItem'> | null, store: Store
 }
 
 export function exportStore(store: Store): string {
-  return JSON.stringify(store, null, 2)
+  return serialize(store, 2)
 }
 
 export function parseImport(
