@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { useEffect, useState } from 'react'
+import { Link, useParams, useSearchParams } from 'react-router'
 import Delta from '../../components/cogtest/Delta'
 import SkillRow from '../../components/cogtest/SkillRow'
 import StartTestButton from '../../components/cogtest/StartTestButton'
@@ -76,6 +76,20 @@ function DogProfilePage() {
   const { store } = useCogStoreContext()
   const [now] = useState(() => new Date())
   const dog = store.dogs.find((d) => d.id === dogId)
+  const [searchParams] = useSearchParams()
+  const scrollToSurvey = searchParams.get('to') === 'survey' && dog !== undefined
+
+  // Runs after ScrollManager has opened the screen at the top. Uses layout offsets, not
+  // scrollIntoView: the card's entrance animation scales it, which would skew the target.
+  useEffect(() => {
+    if (!scrollToSurvey) return
+    let top = 0
+    for (let node = document.getElementById('survey'); node; node = node.offsetParent as HTMLElement | null) {
+      top += node.offsetTop
+    }
+    if (top > 0) window.scrollTo(0, top - 16)
+  }, [scrollToSurvey])
+
   if (!dog) return <NotFound />
 
   const finished = store.tests
