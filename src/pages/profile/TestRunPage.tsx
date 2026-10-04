@@ -4,7 +4,7 @@ import Stopwatch from '../../components/cogtest/Stopwatch'
 import TypeIcon from '../../components/TypeIcon'
 import { useCogStoreContext } from '../../cogtest/CogStoreContext'
 import { doneResult, timerRaw } from '../../cogtest/scoring'
-import { TEST_TASKS } from '../../cogtest/tasks'
+import { preparationEquipment, TEST_TASKS } from '../../cogtest/tasks'
 import {
   DETOUR_OUTCOME_LABELS,
   SKIP_REASON_LABELS,
@@ -22,7 +22,7 @@ const OUTCOMES = (Object.keys(DETOUR_OUTCOME_LABELS) as DetourOutcome[]).map((va
   label: DETOUR_OUTCOME_LABELS[value],
 }))
 
-const ALL_EQUIPMENT = [...new Set(TEST_TASKS.flatMap((task) => task.equipment))]
+const ALL_EQUIPMENT = preparationEquipment()
 
 function NotFound() {
   return (

@@ -196,3 +196,12 @@ export const TEST_TASKS: TestTask[] = [
     sources: [COREN],
   },
 ]
+
+/**
+ * Equipment for the preparation checklist: every task's items once, with all kinds of treats
+ * («вкусное», «пахучее» …) merged into a single «лакомство».
+ */
+export function preparationEquipment(tasks: TestTask[] = TEST_TASKS): string[] {
+  const items = tasks.flatMap((task) => task.equipment).map((item) => (item.includes('лакомств') ? 'лакомство' : item))
+  return [...new Set(items)]
+}
