@@ -7,18 +7,8 @@ import GamePage from './pages/GamePage.tsx'
 import TestRunPage from './pages/profile/TestRunPage.tsx'
 import TestResultPage from './pages/profile/TestResultPage.tsx'
 import SurveyRunPage from './pages/profile/SurveyRunPage.tsx'
+import SurveyResultPage from './pages/profile/SurveyResultPage.tsx'
 import DogProfilePage from './pages/profile/DogProfilePage.tsx'
-
-function SurveySoon() {
-  return (
-    <div className="block test-run">
-      <h1>Скоро…</h1>
-      <p>
-        <Link to="/profile">← К профилям</Link>
-      </p>
-    </div>
-  )
-}
 
 function ModeSwitch() {
   const { pathname } = useLocation()
@@ -74,7 +64,7 @@ function App() {
               element={<DogProfilePage />}
             />
             <Route path="/profile/survey/:surveyId" element={<SurveyRunPage />} />
-            <Route path="/profile/survey-result/:surveyId" element={<SurveySoon />} />
+            <Route path="/profile/survey-result/:surveyId" element={<SurveyResultPage />} />
             <Route path="*" element={<p>Страница не найдена.</p>} />
           </Routes>
         </CogStoreProvider>

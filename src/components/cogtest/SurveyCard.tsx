@@ -5,42 +5,12 @@ import { unfinishedSurvey } from '../../cogtest/reducer'
 import { SURVEY_SOURCE } from '../../cogtest/surveyQuestions'
 import { previousSurvey, surveyTotal, surveyZone, ZONES } from '../../cogtest/surveyScoring'
 import type { Dog, Survey } from '../../cogtest/types'
+import SurveyChange from './SurveyChange'
+import { SURVEY_BANDS } from './surveyBands'
 import StartSurveyButton from './StartSurveyButton'
 import TrendChart from './TrendChart'
 
 const MONTHS_AHEAD = 6
-
-const BANDS = [
-  { from: 16, to: 40, color: 'var(--ok-bg)' },
-  { from: 40, to: 50, color: 'var(--warn-bg)' },
-  { from: 50, to: 80, color: 'var(--danger-bg)' },
-]
-
-/** Total went up = worse (red), down = better (green); text for screen readers, never colour alone. */
-function SurveyChange({ delta }: { delta: number }) {
-  if (delta > 0) {
-    return (
-      <span className="survey-up">
-        <span aria-hidden="true">↑ +{delta}</span>
-        <span className="visually-hidden">хуже на {delta}</span>
-      </span>
-    )
-  }
-  if (delta < 0) {
-    return (
-      <span className="survey-down">
-        <span aria-hidden="true">↓ −{-delta}</span>
-        <span className="visually-hidden">лучше на {-delta}</span>
-      </span>
-    )
-  }
-  return (
-    <span className="survey-eq">
-      <span aria-hidden="true">=</span>
-      <span className="visually-hidden">без изменений</span>
-    </span>
-  )
-}
 
 interface Props {
   dog: Dog
@@ -137,7 +107,7 @@ function SurveyCard({ dog, now }: Props) {
                 points={points}
                 min={16}
                 max={80}
-                bands={BANDS}
+                bands={SURVEY_BANDS}
                 label="Итог анкеты, от 16 до 80"
               />
             </div>
