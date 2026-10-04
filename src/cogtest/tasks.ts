@@ -197,11 +197,20 @@ export const TEST_TASKS: TestTask[] = [
   },
 ]
 
+const CUPS = /^(\d+) одинаковых стаканчик/
+
 /**
- * Equipment for the preparation checklist: every task's items once, with all kinds of treats
- * («вкусное», «пахучее» …) merged into a single «лакомство».
+ * Equipment for the preparation checklist: every task's items once. All kinds of treats
+ * («вкусное», «пахучее» …) become a single «лакомство», and cups are listed once with the
+ * largest number any task needs (the same cups serve every task).
  */
 export function preparationEquipment(tasks: TestTask[] = TEST_TASKS): string[] {
-  const items = tasks.flatMap((task) => task.equipment).map((item) => (item.includes('лакомств') ? 'лакомство' : item))
+  const all = tasks.flatMap((task) => task.equipment)
+  const cups = Math.max(0, ...all.map((item) => Number(CUPS.exec(item)?.[1] ?? 0)))
+  const items = all.map((item) => {
+    if (item.includes('лакомств')) return 'лакомство'
+    if (CUPS.test(item)) return `${cups} одинаковых стаканчика`
+    return item
+  })
   return [...new Set(items)]
 }
