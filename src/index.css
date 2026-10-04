@@ -2317,3 +2317,83 @@ details[open] > summary.feed-line::after {
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* Survey run */
+
+.survey-bar {
+  height: 14px;
+  margin: 4px 0 18px;
+  overflow: hidden;
+  background: var(--bg);
+  border: 2.5px solid var(--ink);
+  border-radius: 999px;
+}
+
+.survey-bar i {
+  display: block;
+  height: 100%;
+  background: var(--caramel);
+  border-right: 2.5px solid var(--ink);
+}
+
+.survey-change-intro {
+  padding: 10px 14px;
+  margin: 0 0 12px;
+  font-weight: 800;
+  background: var(--warn-bg);
+  border: var(--outline);
+  border-radius: 16px;
+}
+
+.test-run .survey-question {
+  margin: 0 0 8px;
+  font-size: 1.125rem;
+  line-height: 1.35;
+}
+
+.survey-hint {
+  margin: 0 0 14px;
+  color: var(--muted);
+}
+
+.survey-options {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.survey-option {
+  min-height: 52px;
+  padding: 10px 16px;
+  font: inherit;
+  font-size: 1.0625rem;
+  font-weight: 800;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  background: var(--surface);
+  border: var(--outline);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  touch-action: manipulation;
+}
+
+.survey-option:active {
+  box-shadow: none;
+  transform: translate(3px, 3px);
+}
+
+.survey-option[aria-pressed='true'] {
+  background: var(--sun);
+}
+
+.survey-footer {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.survey-saved {
+  margin-left: auto;
+  font-size: 0.875rem;
+  color: var(--muted);
+}

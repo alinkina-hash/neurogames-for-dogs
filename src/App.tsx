@@ -6,6 +6,7 @@ import CatalogPage from './pages/CatalogPage.tsx'
 import GamePage from './pages/GamePage.tsx'
 import TestRunPage from './pages/profile/TestRunPage.tsx'
 import TestResultPage from './pages/profile/TestResultPage.tsx'
+import SurveyRunPage from './pages/profile/SurveyRunPage.tsx'
 import DogProfilePage from './pages/profile/DogProfilePage.tsx'
 
 function SurveySoon() {
@@ -72,7 +73,7 @@ function App() {
               path="/profile/dog/:dogId"
               element={<DogProfilePage />}
             />
-            <Route path="/profile/survey/:surveyId" element={<SurveySoon />} />
+            <Route path="/profile/survey/:surveyId" element={<SurveyRunPage />} />
             <Route path="/profile/survey-result/:surveyId" element={<SurveySoon />} />
             <Route path="*" element={<p>Страница не найдена.</p>} />
           </Routes>
