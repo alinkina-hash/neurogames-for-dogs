@@ -48,15 +48,30 @@ export function formatShortDate(iso: string): string {
   return `${date.getDate()} ${SHORT_MONTHS[date.getMonth()]}`
 }
 
-/** «N месяцев» under a year, otherwise «N лет»; undefined when the month is unknown or invalid. */
-export function ageText(birthMonth: string | undefined, now: Date): string | undefined {
+function ageMonths(birthMonth: string | undefined, now: Date): number | undefined {
   const match = birthMonth?.match(/^(\d{4})-(\d{2})$/)
   if (!match) return undefined
   const months = (now.getFullYear() - Number(match[1])) * 12 + (now.getMonth() + 1 - Number(match[2]))
-  if (months < 0) return undefined
+  return months < 0 ? undefined : months
+}
+
+/** «N месяцев» under a year, otherwise «N лет»; undefined when the month is unknown or invalid. */
+export function ageText(birthMonth: string | undefined, now: Date): string | undefined {
+  const months = ageMonths(birthMonth, now)
+  if (months === undefined) return undefined
   if (months < 12) return `${months} ${pluralRu(months, ['месяц', 'месяца', 'месяцев'])}`
   const years = Math.floor(months / 12)
   return `${years} ${pluralRu(years, ['год', 'года', 'лет'])}`
+}
+
+/** Whole years; undefined when the month is unknown or invalid. */
+export function ageYears(birthMonth: string | undefined, now: Date): number | undefined {
+  const months = ageMonths(birthMonth, now)
+  return months === undefined ? undefined : Math.floor(months / 12)
+}
+
+export function isSeniorAge(years: number): boolean {
+  return years >= 8
 }
 
 export function testsCountText(n: number): string {
