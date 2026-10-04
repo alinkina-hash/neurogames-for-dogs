@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addMonths } from './format'
+import { addMonths, suggestSurvey } from './format'
 
 function ymd(date: Date): [number, number, number] {
   return [date.getFullYear(), date.getMonth() + 1, date.getDate()]
@@ -20,5 +20,23 @@ describe('addMonths', () => {
 
   it('keeps the day when the target month is long enough', () => {
     expect(ymd(addMonths(local(2026, 3, 15), 6))).toEqual([2026, 9, 15])
+  })
+})
+
+describe('suggestSurvey', () => {
+  const now = new Date(2026, 9, 4)
+
+  it('suggests the survey from 8 years', () => {
+    expect(suggestSurvey('2018-10', now)).toBe(true)
+    expect(suggestSurvey('2017-01', now)).toBe(true)
+  })
+
+  it('does not suggest it to younger dogs', () => {
+    expect(suggestSurvey('2018-11', now)).toBe(false)
+    expect(suggestSurvey('2023-05', now)).toBe(false)
+  })
+
+  it('suggests it when the age is unknown', () => {
+    expect(suggestSurvey(undefined, now)).toBe(true)
   })
 })

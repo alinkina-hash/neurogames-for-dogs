@@ -62,7 +62,7 @@ function SurveyCard({ dog, now }: Props) {
 
   return (
     <>
-      <section className="block survey-card">
+      <section className="block survey-card" id="survey">
         <h2>Анкета о поведении в старшем возрасте</h2>
         <p>
           13 вопросов о повседневном поведении собаки: как она ориентируется дома, узнаёт ли

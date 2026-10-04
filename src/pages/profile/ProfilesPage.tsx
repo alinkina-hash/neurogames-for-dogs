@@ -4,7 +4,7 @@ import StartTestButton from '../../components/cogtest/StartTestButton.tsx'
 import { useCogStoreContext } from '../../cogtest/CogStoreContext'
 import { latestFinished, type DogInput } from '../../cogtest/reducer'
 import { exportStore, parseImport } from '../../cogtest/storage'
-import { formatDate } from '../../cogtest/format'
+import { formatDate, suggestSurvey } from '../../cogtest/format'
 import { summarizeTest } from '../../cogtest/scoring'
 import type { Dog, Store } from '../../cogtest/types'
 
@@ -193,6 +193,7 @@ function ProfilesPage() {
   // Confirmations are shown on the page: native confirm() dialogs do not appear in every mobile browser.
   const [deleting, setDeleting] = useState<string | null>(null)
   const [confirmingReset, setConfirmingReset] = useState(false)
+  const [today] = useState(() => new Date())
   const [pendingImport, setPendingImport] = useState<Store | null>(null)
 
   function exportData() {
@@ -357,6 +358,11 @@ function ProfilesPage() {
                       <Link to={`/profile/dog/${dog.id}`} className="chip">
                         Профиль
                       </Link>
+                      {suggestSurvey(dog.birthMonth, today) && (
+                        <Link to={`/profile/dog/${dog.id}?to=survey`} className="chip">
+                          Возрастные изменения
+                        </Link>
+                      )}
                       <button
                         type="button"
                         className="chip"

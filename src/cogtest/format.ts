@@ -85,6 +85,12 @@ export function isSeniorAge(years: number): boolean {
   return years >= 8
 }
 
+/** Whether to offer the behaviour survey on the dog list: senior dogs, or when the age is unknown. */
+export function suggestSurvey(birthMonth: string | undefined, now: Date): boolean {
+  const years = ageYears(birthMonth, now)
+  return years === undefined || isSeniorAge(years)
+}
+
 export function testsCountText(n: number): string {
   return `${n} ${pluralRu(n, ['тест', 'теста', 'тестов'])}`
 }
