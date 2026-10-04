@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
-import { reducer, unfinishedTest, type Action } from './reducer'
+import { reducer, unfinishedSurvey, unfinishedTest, type Action } from './reducer'
 import { emptyStore, loadStore, makeId, saveStore, storageChange, type LoadResult } from './storage'
 import type { Store } from './types'
 
@@ -27,6 +27,7 @@ export function useCogStore(): {
   corruptRaw?: string
   dispatch: (action: Action) => void
   startTest: (dogId: string) => string
+  startSurvey: (dogId: string) => string
   resetCorrupt: () => void
 } {
   const [loaded] = useState(initialLoad)
@@ -42,10 +43,14 @@ export function useCogStore(): {
   const external = useRef<Store | null>(null)
   // Ids handed out by startTest that the store may not reflect yet (before the next render).
   const pendingStarts = useRef(new Map<string, string>())
+  const pendingSurveyStarts = useRef(new Map<string, string>())
   useEffect(() => {
     storeRef.current = store
     for (const [dogId, testId] of pendingStarts.current) {
       if (store.tests.some((test) => test.id === testId)) pendingStarts.current.delete(dogId)
+    }
+    for (const [dogId, surveyId] of pendingSurveyStarts.current) {
+      if (store.surveys.some((survey) => survey.id === surveyId)) pendingSurveyStarts.current.delete(dogId)
     }
     if (status !== 'ok' || store === initialStore || store === external.current) return
     // Persisting is synchronization with an external system; its failure is reported via status.
@@ -86,6 +91,17 @@ export function useCogStore(): {
     return testId
   }, [])
 
+  const startSurvey = useCallback((dogId: string) => {
+    const existing = unfinishedSurvey(storeRef.current, dogId)
+    if (existing) return existing.id
+    const pending = pendingSurveyStarts.current.get(dogId)
+    if (pending) return pending
+    const surveyId = makeId()
+    pendingSurveyStarts.current.set(dogId, surveyId)
+    dispatch({ type: 'startSurvey', dogId, now: new Date().toISOString(), surveyId })
+    return surveyId
+  }, [])
+
   const resetCorrupt = useCallback(() => {
     const fresh = emptyStore()
     if (saveStore(getStorage(), fresh)) {
@@ -97,5 +113,5 @@ export function useCogStore(): {
     dispatch({ type: 'replaceAll', store: fresh })
   }, [])
 
-  return { store, status, corruptRaw, dispatch, startTest, resetCorrupt }
+  return { store, status, corruptRaw, dispatch, startTest, startSurvey, resetCorrupt }
 }

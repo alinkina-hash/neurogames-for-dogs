@@ -115,4 +115,5 @@ export interface Store {
   version: 1
   dogs: Dog[]
   tests: CogTest[]
+  surveys: Survey[]
 }

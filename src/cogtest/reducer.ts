@@ -1,6 +1,7 @@
 import { PROTOCOL_VERSION } from './tasks'
 import { BIRTH_MONTH_RE, makeId } from './storage'
-import type { CogTest, Dog, Store, TaskId, TaskResult } from './types'
+import { SURVEY_QUESTIONS, SURVEY_VERSION } from './surveyQuestions'
+import type { CogTest, Dog, Store, Survey, SurveyAnswer, SurveyQuestionId, TaskId, TaskResult } from './types'
 
 export interface DogInput {
   name: string
@@ -16,6 +17,8 @@ export type Action =
   | { type: 'recordTask'; testId: string; taskId: TaskId; result: TaskResult }
   | { type: 'finishTest'; testId: string; now: string }
   | { type: 'setNote'; testId: string; note: string }
+  | { type: 'startSurvey'; dogId: string; now: string; surveyId: string }
+  | { type: 'answerSurvey'; surveyId: string; questionId: SurveyQuestionId; value: SurveyAnswer; now: string }
   | { type: 'replaceAll'; store: Store }
 
 export function unfinishedTest(store: Store, dogId: string): CogTest | undefined {
@@ -26,6 +29,17 @@ export function unfinishedTest(store: Store, dogId: string): CogTest | undefined
 export function latestFinished(store: Store, dogId: string): CogTest | undefined {
   return store.tests
     .filter((test) => test.dogId === dogId && test.finishedAt)
+    .sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1))[0]
+}
+
+export function unfinishedSurvey(store: Store, dogId: string): Survey | undefined {
+  return store.surveys.find((survey) => survey.dogId === dogId && !survey.finishedAt)
+}
+
+/** Latest finished survey of the dog by start time. */
+export function latestFinishedSurvey(store: Store, dogId: string): Survey | undefined {
+  return store.surveys
+    .filter((survey) => survey.dogId === dogId && survey.finishedAt)
     .sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1))[0]
 }
 
@@ -74,6 +88,7 @@ export function reducer(store: Store, action: Action, ids: () => string = makeId
         ...store,
         dogs: store.dogs.filter((dog) => dog.id !== action.dogId),
         tests: store.tests.filter((test) => test.dogId !== action.dogId),
+        surveys: store.surveys.filter((survey) => survey.dogId !== action.dogId),
       }
     case 'startTest': {
       if (!store.dogs.some((dog) => dog.id === action.dogId)) return store
@@ -101,6 +116,28 @@ export function reducer(store: Store, action: Action, ids: () => string = makeId
         void _old
         return action.note ? { ...rest, note: action.note } : rest
       })
+    case 'startSurvey': {
+      if (!store.dogs.some((dog) => dog.id === action.dogId)) return store
+      if (unfinishedSurvey(store, action.dogId)) return store
+      const survey: Survey = {
+        id: action.surveyId,
+        dogId: action.dogId,
+        version: SURVEY_VERSION,
+        startedAt: action.now,
+        answers: {},
+      }
+      return { ...store, surveys: [...store.surveys, survey] }
+    }
+    case 'answerSurvey': {
+      const index = store.surveys.findIndex((survey) => survey.id === action.surveyId)
+      if (index === -1 || store.surveys[index].finishedAt) return store
+      const survey = store.surveys[index]
+      const answers = { ...survey.answers, [action.questionId]: action.value }
+      const complete = Object.keys(answers).length === SURVEY_QUESTIONS.length
+      const surveys = store.surveys.slice()
+      surveys[index] = { ...survey, answers, ...(complete ? { finishedAt: action.now } : {}) }
+      return { ...store, surveys }
+    }
     case 'replaceAll':
       return action.store
   }
