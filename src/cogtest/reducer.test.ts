@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { latestFinished, reducer, unfinishedTest, type Action } from './reducer'
+import { latestFinished, latestFinishedSurvey, reducer, unfinishedSurvey, unfinishedTest, type Action } from './reducer'
 import { emptyStore, storeSchema } from './storage'
+import { SURVEY_QUESTIONS, SURVEY_VERSION } from './surveyQuestions'
 import type { Store } from './types'
 
 const NOW = '2026-10-03T10:00:00.000Z'
@@ -201,6 +202,96 @@ describe('schema compatibility', () => {
       { type: 'setNote', testId: 't1', note: 'заметка' },
       { type: 'finishTest', testId: 't1', now: LATER },
       { type: 'startTest', dogId: 'id-2', now: LATER, testId: 't2' },
+      { type: 'deleteDog', dogId: 'id-2' },
+    ])
+    expect(storeSchema.safeParse(s).success).toBe(true)
+  })
+})
+
+describe('surveys', () => {
+  const ids = SURVEY_QUESTIONS.map((q) => q.id)
+  const answerAll = (surveyId: string, count: number): Action[] =>
+    ids.slice(0, count).map((questionId) => ({
+      type: 'answerSurvey',
+      surveyId,
+      questionId,
+      value: 3,
+      now: LATER,
+    }))
+  const started = () => run(withDogs(), [{ type: 'startSurvey', dogId: 'id-1', now: NOW, surveyId: 's1' }])
+
+  it('starts a survey with the current version and no answers', () => {
+    const s = started()
+    expect(s.surveys).toEqual([{ id: 's1', dogId: 'id-1', version: SURVEY_VERSION, startedAt: NOW, answers: {} }])
+    expect(unfinishedSurvey(s, 'id-1')?.id).toBe('s1')
+    expect(unfinishedSurvey(s, 'id-2')).toBeUndefined()
+  })
+
+  it('does not start a second survey while one is unfinished, or for an unknown dog', () => {
+    const s = started()
+    expect(run(s, [{ type: 'startSurvey', dogId: 'id-1', now: LATER, surveyId: 's2' }])).toBe(s)
+    expect(run(s, [{ type: 'startSurvey', dogId: 'ghost', now: LATER, surveyId: 's3' }])).toBe(s)
+  })
+
+  it('saves an answer and overwrites it', () => {
+    const s = run(started(), [
+      { type: 'answerSurvey', surveyId: 's1', questionId: 'pacing', value: 2, now: LATER },
+      { type: 'answerSurvey', surveyId: 's1', questionId: 'pacing', value: 4, now: LATER },
+    ])
+    expect(s.surveys[0].answers).toEqual({ pacing: 4 })
+    expect(s.surveys[0].finishedAt).toBeUndefined()
+  })
+
+  it('finishes on the 13th distinct answer, not on repeats', () => {
+    const s12 = run(started(), [...answerAll('s1', 12), ...answerAll('s1', 12)])
+    expect(s12.surveys[0].finishedAt).toBeUndefined()
+    const s13 = run(s12, answerAll('s1', 13).slice(12))
+    expect(s13.surveys[0].finishedAt).toBe(LATER)
+    expect(Object.keys(s13.surveys[0].answers)).toHaveLength(13)
+  })
+
+  it('ignores answers after finish and for an unknown survey', () => {
+    const done = run(started(), answerAll('s1', 13))
+    const again = run(done, [{ type: 'answerSurvey', surveyId: 's1', questionId: 'pacing', value: 5, now: '2027-01-01T00:00:00.000Z' }])
+    expect(again).toBe(done)
+    const unknown = run(done, [{ type: 'answerSurvey', surveyId: 'nope', questionId: 'pacing', value: 5, now: LATER }])
+    expect(unknown).toBe(done)
+  })
+
+  it('allows a new survey after finishing and picks the latest finished by start time', () => {
+    const s = run(started(), [
+      ...answerAll('s1', 13),
+      { type: 'startSurvey', dogId: 'id-1', now: LATER, surveyId: 's2' },
+      ...answerAll('s2', 13),
+      { type: 'startSurvey', dogId: 'id-1', now: '2026-10-04T10:00:00.000Z', surveyId: 's3' },
+    ])
+    expect(s.surveys.map((x) => x.id)).toEqual(['s1', 's2', 's3'])
+    expect(latestFinishedSurvey(s, 'id-1')?.id).toBe('s2')
+    expect(latestFinishedSurvey(s, 'id-2')).toBeUndefined()
+  })
+
+  it('latestFinishedSurvey ignores surveys of another version', () => {
+    const s = run(started(), answerAll('s1', 13))
+    const old: Store = { ...s, surveys: s.surveys.map((x) => ({ ...x, version: SURVEY_VERSION + 1 }) as Store['surveys'][number]) }
+    expect(latestFinishedSurvey(old, 'id-1')).toBeUndefined()
+    expect(latestFinishedSurvey(s, 'id-1')?.id).toBe('s1')
+  })
+
+  it('deleteDog removes the dog surveys only', () => {
+    const s = run(started(), [
+      { type: 'startSurvey', dogId: 'id-2', now: NOW, surveyId: 's2' },
+      { type: 'deleteDog', dogId: 'id-1' },
+    ])
+    expect(s.surveys.map((x) => x.id)).toEqual(['s2'])
+  })
+
+  it('produces a store the schema accepts after a realistic sequence', () => {
+    const s = run(withDogs(), [
+      { type: 'startSurvey', dogId: 'id-1', now: NOW, surveyId: 's1' },
+      ...answerAll('s1', 13),
+      { type: 'startSurvey', dogId: 'id-1', now: LATER, surveyId: 's2' },
+      ...answerAll('s2', 5),
+      { type: 'startSurvey', dogId: 'id-2', now: LATER, surveyId: 's3' },
       { type: 'deleteDog', dogId: 'id-2' },
     ])
     expect(storeSchema.safeParse(s).success).toBe(true)

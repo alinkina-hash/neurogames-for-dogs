@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { PROTOCOL_VERSION } from './tasks'
 import { STORAGE_KEY, emptyStore, exportStore, loadStore, makeId, parseImport, saveStore, storageChange } from './storage'
+import { SURVEY_QUESTIONS, SURVEY_VERSION } from './surveyQuestions'
 import type { Store } from './types'
 
 function fakeStorage(initial?: string) {
@@ -36,6 +37,7 @@ const sample: Store = {
       note: 'хорошо',
     },
   ],
+  surveys: [],
 }
 
 function withTask(task: unknown): string {
@@ -152,5 +154,82 @@ describe('makeId', () => {
     expect(a).not.toBe('')
     expect(b).not.toBe('')
     expect(a).not.toBe(b)
+  })
+})
+
+describe('surveys in the store', () => {
+  const allAnswers = () => Object.fromEntries(SURVEY_QUESTIONS.map((q) => [q.id, 3]))
+  const survey = (extra: object = {}) => ({
+    id: 's1',
+    dogId: 'd1',
+    version: SURVEY_VERSION,
+    startedAt: '2026-03-01T10:00:00.000Z',
+    answers: allAnswers(),
+    ...extra,
+  })
+  const withSurvey = (s: unknown) => JSON.stringify({ ...JSON.parse(JSON.stringify(sample)), surveys: [s] })
+
+  it('loads an old store without surveys as an empty list', () => {
+    const { surveys: _surveys, ...old } = sample
+    void _surveys
+    const result = loadStore(fakeStorage(JSON.stringify(old)))
+    expect(result).toEqual({ kind: 'ok', store: { ...old, surveys: [] } })
+  })
+
+  it('imports an old backup without surveys', () => {
+    const { surveys: _surveys, ...old } = sample
+    void _surveys
+    expect(parseImport(JSON.stringify(old))).toEqual({ ok: true, store: { ...old, surveys: [] } })
+  })
+
+  it('round trips a finished and an unfinished survey', () => {
+    const store: Store = {
+      ...sample,
+      surveys: [
+        survey({ finishedAt: '2026-03-01T10:05:00.000Z' }),
+        survey({ id: 's2', dogId: 'd2', answers: { pacing: 2 } }),
+      ] as Store['surveys'],
+    }
+    expect(parseImport(exportStore(store))).toEqual({ ok: true, store })
+    expect(JSON.parse(exportStore(store)).surveys).toHaveLength(2)
+  })
+
+  it('serializes a store without surveys with no surveys key (rollback-safe)', () => {
+    const storage = fakeStorage()
+    expect(saveStore(storage, sample)).toBe(true)
+    const saved = JSON.parse(storage.getItem(STORAGE_KEY) as string)
+    expect('surveys' in saved).toBe(false)
+    expect('surveys' in JSON.parse(exportStore(sample))).toBe(false)
+    expect(loadStore(storage)).toEqual({ kind: 'ok', store: sample })
+    expect(parseImport(exportStore(sample))).toEqual({ ok: true, store: sample })
+  })
+
+  it('writes the surveys key when there is at least one survey', () => {
+    const store: Store = { ...sample, surveys: [survey({ answers: { pacing: 2 } })] as Store['surveys'] }
+    const storage = fakeStorage()
+    expect(saveStore(storage, store)).toBe(true)
+    expect(JSON.parse(storage.getItem(STORAGE_KEY) as string).surveys).toHaveLength(1)
+    expect(JSON.parse(exportStore(store)).surveys).toHaveLength(1)
+    expect(loadStore(storage)).toEqual({ kind: 'ok', store })
+  })
+
+  it('accepts a finished survey with all 13 answers', () => {
+    expect(parseImport(withSurvey(survey({ finishedAt: '2026-03-01T10:05:00.000Z' }))).ok).toBe(true)
+  })
+
+  it.each([
+    ['finishedAt with 12 answers', () => {
+      const answers = allAnswers()
+      delete answers[SURVEY_QUESTIONS[0].id]
+      return survey({ finishedAt: '2026-03-01T10:05:00.000Z', answers })
+    }],
+    ['unknown question id', () => survey({ answers: { nope: 1 } })],
+    ['answer 6', () => survey({ answers: { pacing: 6 } })],
+    ['answer 0', () => survey({ answers: { pacing: 0 } })],
+    ['fractional answer', () => survey({ answers: { pacing: 2.5 } })],
+    ['unknown dog', () => survey({ dogId: 'ghost' })],
+    ['extra key', () => survey({ extra: 1 })],
+  ])('rejects %s', (_name, make) => {
+    expect(parseImport(withSurvey(make()))).toEqual({ ok: false, error: 'invalid' })
   })
 })

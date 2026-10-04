@@ -9,6 +9,7 @@
   --caramel: #ffb454;
   --warn-bg: #ffe27a;
   --danger-bg: #ffb9ab;
+  --ok-bg: #c9f0d6;
   --outline: 3px solid var(--ink);
   --shadow: 5px 5px 0 var(--ink);
   --shadow-sm: 3px 3px 0 var(--ink);
@@ -1627,6 +1628,7 @@ a.chip {
   margin: 0 0 6px;
   font-size: 1.125rem;
   font-weight: 900;
+  overflow-wrap: anywhere;
 }
 
 .test-skill {
@@ -2199,4 +2201,370 @@ summary.feed-line::after {
 
 details[open] > summary.feed-line::after {
   content: '▾ свернуть';
+}
+
+.survey-card {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+}
+
+.survey-card h2,
+.survey-card p {
+  margin: 0;
+}
+
+.survey-tag {
+  display: inline-block;
+  padding: 2px 10px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--sun);
+  font-size: 0.875rem;
+  font-weight: 900;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.survey-note {
+  font-size: 0.9375rem;
+  color: var(--muted);
+}
+
+.survey-card > .button,
+.survey-card > .profile-warning {
+  box-sizing: border-box;
+  width: 100%;
+  justify-content: center;
+}
+
+.survey-source {
+  font-size: 0.9375rem;
+  overflow-wrap: anywhere;
+}
+
+.survey-source a {
+  color: var(--link);
+  font-weight: 900;
+}
+
+.survey-history {
+  display: grid;
+  gap: 8px;
+}
+
+.survey-history h2,
+.survey-history p {
+  margin: 0;
+}
+
+.survey-list {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.survey-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.survey-row-date {
+  font-weight: 900;
+}
+
+.survey-row-total {
+  font-weight: 700;
+}
+
+.survey-up {
+  font-weight: 900;
+  white-space: nowrap;
+  color: #b3261e;
+}
+
+.survey-down {
+  font-weight: 900;
+  white-space: nowrap;
+  color: #1f7a45;
+}
+
+.survey-eq {
+  font-weight: 900;
+  color: var(--muted);
+}
+
+.survey-card h2 {
+  display: block;
+  padding: 0;
+  background: none;
+  font-size: 1.1875rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Survey run */
+
+.survey-bar {
+  height: 14px;
+  margin: 4px 0 18px;
+  overflow: hidden;
+  background: var(--bg);
+  border: 2.5px solid var(--ink);
+  border-radius: 999px;
+}
+
+.survey-bar i {
+  display: block;
+  height: 100%;
+  background: var(--caramel);
+  border-right: 2.5px solid var(--ink);
+}
+
+.survey-change-intro {
+  padding: 10px 14px;
+  margin: 0 0 12px;
+  font-weight: 800;
+  background: var(--warn-bg);
+  border: var(--outline);
+  border-radius: 16px;
+}
+
+.test-run .survey-question {
+  margin: 0 0 8px;
+  font-size: 1.125rem;
+  line-height: 1.35;
+}
+
+.survey-hint {
+  margin: 0 0 14px;
+  color: var(--muted);
+}
+
+.survey-options {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.survey-option {
+  min-height: 52px;
+  padding: 10px 16px;
+  font: inherit;
+  font-size: 1.0625rem;
+  font-weight: 800;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  background: var(--surface);
+  border: var(--outline);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  touch-action: manipulation;
+}
+
+.survey-option:active {
+  box-shadow: none;
+  transform: translate(3px, 3px);
+}
+
+.survey-option[aria-pressed='true'] {
+  background: var(--sun);
+}
+
+.survey-footer {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.survey-saved {
+  margin-left: auto;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+/* Survey result */
+
+.survey-score-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.survey-score-total {
+  font-family: var(--display);
+  font-size: 1.5rem;
+}
+
+.survey-score-delta {
+  font-weight: 800;
+}
+
+.survey-zone {
+  position: relative;
+  display: flex;
+  height: 22px;
+  margin: 14px 8px 0;
+  border: 2.5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+.survey-zone i {
+  display: block;
+  height: 100%;
+}
+
+.survey-zone i:first-child {
+  border-radius: 999px 0 0 999px;
+}
+
+.survey-zone i:nth-child(2) {
+  border-left: 2.5px solid var(--ink);
+  border-right: 2.5px solid var(--ink);
+  box-sizing: border-box;
+}
+
+.survey-zone i:nth-child(3) {
+  border-radius: 0 999px 999px 0;
+}
+
+.survey-zone-marker {
+  position: absolute;
+  top: -8px;
+  width: 8px;
+  height: 34px;
+  margin-left: -4px;
+  background: var(--ink);
+  border: 2px solid var(--surface);
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.survey-zone-ticks {
+  position: relative;
+  height: 22px;
+  margin: 6px 8px 0;
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.survey-zone-ticks span {
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+.survey-score {
+  display: grid;
+  gap: 4px;
+}
+
+.survey-score p,
+.survey-vet p,
+.survey-support h2,
+.survey-translation {
+  margin: 0;
+}
+
+.survey-score > .survey-zone-title {
+  display: block;
+  padding: 0;
+  margin: 8px 0 0;
+  background: none;
+  font-size: 1.1875rem;
+  overflow-wrap: anywhere;
+}
+
+.survey-zone-change {
+  font-weight: 800;
+}
+
+.survey-vet {
+  background: var(--warn-bg);
+}
+
+.survey-support ul {
+  display: grid;
+  gap: 4px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.survey-support a {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  font-weight: 800;
+  color: var(--link);
+  text-decoration: none;
+  border-top: 2px dashed var(--ink);
+}
+
+.survey-answers summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.survey-answers ol {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 22px;
+}
+
+.survey-answers li {
+  overflow-wrap: anywhere;
+}
+
+.survey-answers li span {
+  display: block;
+}
+
+.survey-answers-a {
+  font-weight: 800;
+}
+
+.survey-answers-p {
+  color: var(--muted);
+}
+
+.survey-translation {
+  font-size: 0.9375rem;
+  overflow-wrap: anywhere;
+}
+
+.survey-translation a {
+  font-weight: 900;
+  color: var(--link);
+}
+
+.survey-result .button {
+  box-sizing: border-box;
+  width: 100%;
+  justify-content: center;
 }

@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router'
 import Delta from '../../components/cogtest/Delta'
 import SkillRow from '../../components/cogtest/SkillRow'
 import StartTestButton from '../../components/cogtest/StartTestButton'
+import SurveyCard from '../../components/cogtest/SurveyCard'
 import TrendChart from '../../components/cogtest/TrendChart'
 import { compareTests, previousTest } from '../../cogtest/compare'
 import { useCogStoreContext } from '../../cogtest/CogStoreContext'
@@ -194,6 +195,8 @@ function DogProfilePage() {
           ))}
         </ul>
       </section>
+
+      <SurveyCard dog={dog} now={now} />
     </div>
   )
 }

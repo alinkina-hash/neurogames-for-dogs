@@ -85,8 +85,35 @@ export interface Dog {
   createdAt: string
 }
 
+export type SurveyQuestionId =
+  | 'pacing'
+  | 'staring'
+  | 'stuck'
+  | 'recognition'
+  | 'walls'
+  | 'petting'
+  | 'food'
+  | 'pacingChange'
+  | 'staringChange'
+  | 'soilingChange'
+  | 'foodChange'
+  | 'recognitionChange'
+  | 'activityChange'
+
+export type SurveyAnswer = 1 | 2 | 3 | 4 | 5
+
+export interface Survey {
+  id: string
+  dogId: string
+  version: number
+  startedAt: string
+  finishedAt?: string
+  answers: Partial<Record<SurveyQuestionId, SurveyAnswer>>
+}
+
 export interface Store {
   version: 1
   dogs: Dog[]
   tests: CogTest[]
+  surveys: Survey[]
 }

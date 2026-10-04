@@ -1,5 +1,6 @@
 import { z } from 'zod'
-import type { Store, TaskId } from './types'
+import { SURVEY_QUESTIONS, SURVEY_VERSION } from './surveyQuestions'
+import type { Store, SurveyQuestionId, TaskId } from './types'
 
 export const STORAGE_KEY = 'neurogames:v1'
 
@@ -56,11 +57,35 @@ const testSchema = z.strictObject({
   note: z.string().optional(),
 })
 
+const answerSchema = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)])
+
+const surveyQuestionIds = SURVEY_QUESTIONS.map((q) => q.id) as [SurveyQuestionId, ...SurveyQuestionId[]]
+
+const surveySchema = z
+  .strictObject({
+    id: text,
+    dogId: text,
+    version: z.literal(SURVEY_VERSION),
+    startedAt: timestamp,
+    finishedAt: timestamp.optional(),
+    answers: z.partialRecord(z.enum(surveyQuestionIds), answerSchema),
+  })
+  .superRefine((survey, ctx) => {
+    if (survey.finishedAt && Object.keys(survey.answers).length !== SURVEY_QUESTIONS.length) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['finishedAt'],
+        message: 'finished survey must have all answers',
+      })
+    }
+  })
+
 export const storeSchema = z
   .strictObject({
     version: z.literal(1),
     dogs: z.array(dogSchema),
     tests: z.array(testSchema),
+    surveys: z.array(surveySchema).default([]),
   })
   .superRefine((store, ctx) => {
     const dogIds = new Set(store.dogs.map((dog) => dog.id))
@@ -73,10 +98,19 @@ export const storeSchema = z
         })
       }
     })
+    store.surveys.forEach((survey, index) => {
+      if (!dogIds.has(survey.dogId)) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['surveys', index, 'dogId'],
+          message: `unknown dog ${survey.dogId}`,
+        })
+      }
+    })
   }) satisfies z.ZodType<Store>
 
 export function emptyStore(): Store {
-  return { version: 1, dogs: [], tests: [] }
+  return { version: 1, dogs: [], tests: [], surveys: [] }
 }
 
 export type LoadResult =
@@ -114,12 +148,18 @@ export function storageChange(
   return parseStored(key === null ? null : newValue)
 }
 
+/** JSON of the store; `surveys` is written only when non-empty so older builds still accept the data. */
+function serialize(store: Store, space?: number): string {
+  const { surveys, ...rest } = store
+  return JSON.stringify(surveys.length > 0 ? store : rest, null, space)
+}
+
 /** Writes the store; refuses (false) an invalid one so storage never holds data that cannot be loaded. */
 export function saveStore(storage: Pick<Storage, 'setItem'> | null, store: Store): boolean {
   if (!storage) return false
   if (!storeSchema.safeParse(store).success) return false
   try {
-    storage.setItem(STORAGE_KEY, JSON.stringify(store))
+    storage.setItem(STORAGE_KEY, serialize(store))
     return true
   } catch {
     return false
@@ -127,7 +167,7 @@ export function saveStore(storage: Pick<Storage, 'setItem'> | null, store: Store
 }
 
 export function exportStore(store: Store): string {
-  return JSON.stringify(store, null, 2)
+  return serialize(store, 2)
 }
 
 export function parseImport(

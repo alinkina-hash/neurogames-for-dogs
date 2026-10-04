@@ -192,6 +192,7 @@ function ProfilesPage() {
   const [importError, setImportError] = useState('')
   // Confirmations are shown on the page: native confirm() dialogs do not appear in every mobile browser.
   const [deleting, setDeleting] = useState<string | null>(null)
+  const [confirmingReset, setConfirmingReset] = useState(false)
   const [pendingImport, setPendingImport] = useState<Store | null>(null)
 
   function exportData() {
@@ -246,20 +247,46 @@ function ProfilesPage() {
         <section className="block block-danger profile-warning" role="alert">
           <h2>Сохранённые данные повреждены</h2>
           <p>Можно скачать то, что осталось, или начать с чистого листа.</p>
-          <div className="profile-actions">
-            <button
-              type="button"
-              className="button"
-              onClick={() =>
-                download('neurogames-corrupt.json', corruptRaw ?? '')
-              }
-            >
-              Скачать данные
-            </button>
-            <button type="button" className="button" onClick={resetCorrupt}>
-              Начать заново
-            </button>
-          </div>
+          {confirmingReset ? (
+            <div className="profile-confirm" role="alert">
+              <p>Удалить все сохранённые данные и начать заново?</p>
+              <div className="profile-actions">
+                <button
+                  type="button"
+                  className="button button-danger"
+                  onClick={resetCorrupt}
+                >
+                  Да, начать заново
+                </button>
+                <button
+                  type="button"
+                  className="chip"
+                  onClick={() => setConfirmingReset(false)}
+                >
+                  Отмена
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="profile-actions">
+              <button
+                type="button"
+                className="button"
+                onClick={() =>
+                  download('neurogames-corrupt.json', corruptRaw ?? '')
+                }
+              >
+                Скачать данные
+              </button>
+              <button
+                type="button"
+                className="button"
+                onClick={() => setConfirmingReset(true)}
+              >
+                Начать заново
+              </button>
+            </div>
+          )}
         </section>
       </>
     )
