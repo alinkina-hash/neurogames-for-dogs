@@ -8,6 +8,17 @@ import TestRunPage from './pages/profile/TestRunPage.tsx'
 import TestResultPage from './pages/profile/TestResultPage.tsx'
 import DogProfilePage from './pages/profile/DogProfilePage.tsx'
 
+function SurveySoon() {
+  return (
+    <div className="block test-run">
+      <h1>Скоро…</h1>
+      <p>
+        <Link to="/profile">← К профилям</Link>
+      </p>
+    </div>
+  )
+}
+
 function ModeSwitch() {
   const { pathname } = useLocation()
   const inProfile = pathname === '/profile' || pathname.startsWith('/profile/')
@@ -61,6 +72,8 @@ function App() {
               path="/profile/dog/:dogId"
               element={<DogProfilePage />}
             />
+            <Route path="/profile/survey/:surveyId" element={<SurveySoon />} />
+            <Route path="/profile/survey-result/:surveyId" element={<SurveySoon />} />
             <Route path="*" element={<p>Страница не найдена.</p>} />
           </Routes>
         </CogStoreProvider>

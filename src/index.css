@@ -9,6 +9,7 @@
   --caramel: #ffb454;
   --warn-bg: #ffe27a;
   --danger-bg: #ffb9ab;
+  --ok-bg: #c9f0d6;
   --outline: 3px solid var(--ink);
   --shadow: 5px 5px 0 var(--ink);
   --shadow-sm: 3px 3px 0 var(--ink);
@@ -2199,4 +2200,108 @@ summary.feed-line::after {
 
 details[open] > summary.feed-line::after {
   content: '▾ свернуть';
+}
+
+.survey-card {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+}
+
+.survey-card h2,
+.survey-card p {
+  margin: 0;
+}
+
+.survey-tag {
+  display: inline-block;
+  padding: 2px 10px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--sun);
+  font-size: 0.875rem;
+  font-weight: 900;
+}
+
+.survey-note {
+  font-size: 0.9375rem;
+  color: var(--muted);
+}
+
+.survey-card .button,
+.survey-card .profile-warning {
+  box-sizing: border-box;
+  width: 100%;
+  justify-content: center;
+}
+
+.survey-source {
+  font-size: 0.9375rem;
+  overflow-wrap: anywhere;
+}
+
+.survey-source a {
+  color: var(--link);
+  font-weight: 900;
+}
+
+.survey-history {
+  display: grid;
+  gap: 8px;
+}
+
+.survey-history h2,
+.survey-history p {
+  margin: 0;
+}
+
+.survey-list {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.survey-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.survey-row-date {
+  font-weight: 900;
+}
+
+.survey-row-total {
+  font-weight: 700;
+}
+
+.survey-up {
+  font-weight: 900;
+  white-space: nowrap;
+  color: #b3261e;
+}
+
+.survey-down {
+  font-weight: 900;
+  white-space: nowrap;
+  color: #1f7a45;
+}
+
+.survey-eq {
+  font-weight: 900;
+  color: var(--muted);
+}
+
+.survey-card h2 {
+  display: block;
+  padding: 0;
+  background: none;
+  font-size: 1.1875rem;
 }
