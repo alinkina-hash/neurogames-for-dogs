@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 import { useCogStoreContext } from '../../cogtest/CogStoreContext'
-import { ageText, ageYears, formatDate, formatDayMonth, isSeniorAge } from '../../cogtest/format'
+import { addMonths, ageText, ageYears, formatDate, formatDayMonth, isSeniorAge } from '../../cogtest/format'
 import { unfinishedSurvey } from '../../cogtest/reducer'
 import { SURVEY_SOURCE } from '../../cogtest/surveyQuestions'
 import { previousSurvey, surveyTotal, surveyZone, ZONES } from '../../cogtest/surveyScoring'
@@ -16,33 +16,30 @@ const BANDS = [
   { from: 50, to: 80, color: 'var(--danger-bg)' },
 ]
 
-/** Total went up = worse (red), down = better (green). */
+/** Total went up = worse (red), down = better (green); text for screen readers, never colour alone. */
 function SurveyChange({ delta }: { delta: number }) {
   if (delta > 0) {
     return (
-      <span className="survey-up" aria-label={`хуже на ${delta}`}>
-        ↑ +{delta}
+      <span className="survey-up">
+        <span aria-hidden="true">↑ +{delta}</span>
+        <span className="visually-hidden">хуже на {delta}</span>
       </span>
     )
   }
   if (delta < 0) {
     return (
-      <span className="survey-down" aria-label={`лучше на ${-delta}`}>
-        ↓ −{-delta}
+      <span className="survey-down">
+        <span aria-hidden="true">↓ −{-delta}</span>
+        <span className="visually-hidden">лучше на {-delta}</span>
       </span>
     )
   }
   return (
-    <span className="survey-eq" aria-label="без изменений">
-      =
+    <span className="survey-eq">
+      <span aria-hidden="true">=</span>
+      <span className="visually-hidden">без изменений</span>
     </span>
   )
-}
-
-function nextSurveyDate(startedAt: string): Date {
-  const date = new Date(startedAt)
-  date.setMonth(date.getMonth() + MONTHS_AHEAD)
-  return date
 }
 
 interface Props {
@@ -66,7 +63,7 @@ function SurveyCard({ dog, now }: Props) {
     return total === null ? [] : [{ date: s.startedAt, value: total }]
   })
 
-  const next = finished[0] ? nextSurveyDate(finished[0].startedAt) : undefined
+  const next = finished[0] ? addMonths(finished[0].startedAt, MONTHS_AHEAD) : undefined
   const showNext = next !== undefined && next.getTime() > now.getTime()
 
   function row(survey: Survey) {

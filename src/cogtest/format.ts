@@ -48,6 +48,17 @@ export function formatShortDate(iso: string): string {
   return `${date.getDate()} ${SHORT_MONTHS[date.getMonth()]}`
 }
 
+/** Local date `months` after `iso`; a day past the end of the target month clamps to its last day. */
+export function addMonths(iso: string, months: number): Date {
+  const date = new Date(iso)
+  const day = date.getDate()
+  date.setDate(1)
+  date.setMonth(date.getMonth() + months)
+  const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
+  date.setDate(Math.min(day, lastDay))
+  return date
+}
+
 function ageMonths(birthMonth: string | undefined, now: Date): number | undefined {
   const match = birthMonth?.match(/^(\d{4})-(\d{2})$/)
   if (!match) return undefined
