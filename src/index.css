@@ -1484,6 +1484,8 @@ a.chip {
 
 .profile-form label {
   display: grid;
+  /* minmax(0, …) lets wide native controls (iOS month picker) shrink to the card. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 4px;
   font-weight: 800;
 }
@@ -1491,6 +1493,8 @@ a.chip {
 .profile-form input {
   box-sizing: border-box;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   min-height: 44px;
   padding: 0 12px;
   font: inherit;
@@ -1498,6 +1502,35 @@ a.chip {
   background: var(--surface);
   border: 2.5px solid var(--ink);
   border-radius: 14px;
+}
+
+.profile-form input[type='month'] {
+  display: block;
+  line-height: 40px;
+  text-align: left;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.profile-form input[type='month']::-webkit-date-and-time-value {
+  text-align: left;
+}
+
+.profile-confirm {
+  padding: 14px 16px;
+  margin: 8px 0;
+  background: var(--danger-bg);
+  border: 2.5px solid var(--ink);
+  border-radius: 18px;
+}
+
+.profile-confirm p {
+  margin: 0 0 12px;
+  font-weight: 800;
+}
+
+.button-danger {
+  background: var(--danger-bg);
 }
 
 .profile-count input {

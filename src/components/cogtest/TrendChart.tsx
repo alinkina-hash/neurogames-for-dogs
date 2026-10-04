@@ -15,6 +15,7 @@ interface Props {
 
 /** Inline-SVG line chart: full variant labels dates and values, compact draws the line and last dot. */
 function TrendChart({ points, max, label, color = 'var(--sun)', compact = false }: Props) {
+  if (points.length === 0) return <p className="trend-empty">Нет данных</p>
   if (points.length < 2) return <p className="trend-empty">Пока мало данных</p>
 
   const summary = `${label}: ${points.map((p) => `${formatShortDate(p.date)} — ${p.value}`).join(', ')}`

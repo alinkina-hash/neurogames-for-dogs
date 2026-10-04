@@ -75,7 +75,7 @@ function DogFields({
         />
       </label>
       <label>
-        Месяц рождения (необязательно)
+        Дата рождения (необязательно)
         <input
           type="month"
           value={value.birthMonth ?? ''}
@@ -190,6 +190,9 @@ function ProfilesPage() {
     useCogStoreContext()
   const [editing, setEditing] = useState<string | 'new' | null>(null)
   const [importError, setImportError] = useState('')
+  // Confirmations are shown on the page: native confirm() dialogs do not appear in every mobile browser.
+  const [deleting, setDeleting] = useState<string | null>(null)
+  const [pendingImport, setPendingImport] = useState<Store | null>(null)
 
   function exportData() {
     download(`neurogames-backup-${localDay()}.json`, exportStore(store))
@@ -218,24 +221,20 @@ function ProfilesPage() {
       )
       return
     }
-    if (
-      window.confirm(
-        'Заменить текущие данные данными из файла? Текущие собаки и тесты будут удалены.',
-      )
-    ) {
-      dispatch({ type: 'replaceAll', store: result.store })
-      setEditing(null)
-    }
+    setPendingImport(result.store)
   }
 
-  function removeDog(dog: Dog) {
-    if (
-      window.confirm(
-        `Удалить собаку «${dog.name}»? Вся история тестов этой собаки будет удалена.`,
-      )
-    ) {
-      dispatch({ type: 'deleteDog', dogId: dog.id })
-    }
+  function confirmImport() {
+    if (!pendingImport) return
+    dispatch({ type: 'replaceAll', store: pendingImport })
+    setPendingImport(null)
+    setEditing(null)
+    setDeleting(null)
+  }
+
+  function confirmDelete(dog: Dog) {
+    dispatch({ type: 'deleteDog', dogId: dog.id })
+    setDeleting(null)
   }
 
   const now = () => new Date().toISOString()
@@ -299,6 +298,29 @@ function ProfilesPage() {
                     }}
                     onCancel={() => setEditing(null)}
                   />
+                ) : deleting === dog.id ? (
+                  <div className="profile-confirm" role="alert">
+                    <p>
+                      Удалить собаку «{dog.name}»? Вся история тестов этой
+                      собаки будет удалена.
+                    </p>
+                    <div className="profile-actions">
+                      <button
+                        type="button"
+                        className="button button-danger"
+                        onClick={() => confirmDelete(dog)}
+                      >
+                        Да, удалить
+                      </button>
+                      <button
+                        type="button"
+                        className="chip"
+                        onClick={() => setDeleting(null)}
+                      >
+                        Отмена
+                      </button>
+                    </div>
+                  </div>
                 ) : (
                   <>
                     <h2>{dog.name}</h2>
@@ -318,7 +340,7 @@ function ProfilesPage() {
                       <button
                         type="button"
                         className="chip"
-                        onClick={() => removeDog(dog)}
+                        onClick={() => setDeleting(dog.id)}
                       >
                         Удалить
                       </button>
@@ -374,6 +396,30 @@ function ProfilesPage() {
           <p className="profile-error" role="alert">
             {importError}
           </p>
+        )}
+        {pendingImport && (
+          <div className="profile-confirm" role="alert">
+            <p>
+              Заменить текущие данные данными из файла? Текущие собаки и тесты
+              будут удалены.
+            </p>
+            <div className="profile-actions">
+              <button
+                type="button"
+                className="button button-danger"
+                onClick={confirmImport}
+              >
+                Заменить
+              </button>
+              <button
+                type="button"
+                className="chip"
+                onClick={() => setPendingImport(null)}
+              >
+                Отмена
+              </button>
+            </div>
+          </div>
         )}
       </section>
 
